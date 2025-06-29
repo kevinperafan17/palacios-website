@@ -1,17 +1,14 @@
 @echo off
-cd /d "C:\Users\LENOVO\Desktop\Kevin Yerson Perafan\4.  Pagina Web\Palacios Asesaores & Revisores"
-
-echo -----------------------------
+cd "C:\Users\LENOVO\Desktop\Kevin Yerson Perafan\4.  Pagina Web\Palacios Asesaores & Revisores"
+echo.
+echo ================================
 echo Subiendo cambios a GitHub...
-echo -----------------------------
-
+echo ================================
+set /p msg=Escribe el mensaje del commit:
 git add .
-
-set /p mensaje=Escribe el mensaje del commit: 
-git commit -m "%mensaje%"
-
+git commit -m "%msg%"
 git push origin main
-
-echo -----------------------------
+echo.
+echo ================================
 echo Cambios subidos correctamente.
 pause
