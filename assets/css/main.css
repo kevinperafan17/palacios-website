@@ -3576,3 +3576,21 @@ section,
   color: color-mix(in srgb, var(--default-color), transparent 60%);
   font-size: 14px;
 }
+/* Custom Social Media Icon Hover Color */
+.footer .social-links a:hover {
+  color: #D3B873;
+  border-color: #D3B873;
+}
+
+.team .team-member .social a:hover {
+  background: #D3B873;
+}
+
+
+/* Custom Social Media Icon Hover Color for Contact Section */
+.call-to-action .social-links a:hover {
+  background-color: #D3B873;
+  border-color: #D3B873;
+  color: white;
+}
+
