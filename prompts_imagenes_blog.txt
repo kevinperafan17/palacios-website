@@ -1,0 +1,62 @@
+Archivo: blog-details.html
+Prompt: Fotografía realista de un equipo diverso de profesionales en una moderna oficina, discutiendo una estrategia de crecimiento frente a una pizarra con gráficos ascendentes. Ambiente colaborativo y enérgico. Paleta de colores corporativos (azules, grises). Iluminación natural. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-auditoria.html
+Prompt: Fotografía realista de un auditor profesional revisando documentos financieros en un escritorio de oficina limpio y ordenado. Enfoque en los detalles, con calculadora y laptop visibles. Ambiente de concentración y profesionalismo. Iluminación de oficina brillante. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-auditoria-2.html
+Prompt: Fotografía realista de una sala de servidores (data center) con un técnico realizando una revisión de seguridad. Luces LED de los servidores visibles. Ambiente tecnológico y seguro. Paleta de colores fríos (azules, verdes, metálicos). Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-auditoria-3.html
+Prompt: Fotografía realista de una mesa de juntas con un libro de normativas abierto junto a una laptop y documentos. Nadie en la imagen, solo los objetos que sugieren una revisión de cumplimiento. Ambiente formal y ordenado. Madera oscura y tonos neutros. Iluminación suave. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-complementarios.html
+Prompt: Fotografía realista de dos manos de negocios estrechándose para cerrar un trato, con el fondo desenfocado de una oficina moderna. Simboliza confianza y sinergia. Ambiente profesional. Iluminación cálida y acogedora. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-complementarios-2.html
+Prompt: Fotografía realista de un consultor de negocios presentando un plan a un cliente en un café o un entorno de trabajo informal. Ambiente de colaboración y soporte personalizado. Luz natural. Paleta de colores neutros. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-complementarios-3.html
+Prompt: Fotografía realista de un diagrama de flujo de servicios sobre una pared de cristal en una oficina, mostrando la expansión de las ofertas de una empresa. Ambiente de crecimiento y estrategia. Iluminación brillante. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-innovacion.html
+Prompt: Fotografía realista de un grupo de ingenieros trabajando con un prototipo tecnológico (ej. un dron, un dispositivo VR) en un taller o laboratorio moderno. Ambiente de creatividad y avance. Iluminación de trabajo, enfocada en el objeto. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-innovacion-2.html
+Prompt: Fotografía realista de una persona dibujando una idea en una tableta digital. La pantalla brilla mostrando un diseño complejo. Enfoque en la mano y la pantalla. Ambiente de concentración y creatividad. Fondo oscuro para resaltar la pantalla. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-innovacion-3.html
+Prompt: Fotografía realista de una persona interactuando con una pantalla táctil transparente gigante que muestra datos y conexiones globales. Ambiente futurista y tecnológico. Paleta de colores con azules y blancos brillantes. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-propiedad-horizontal.html
+Prompt: Fotografía realista de la fachada de un edificio de apartamentos moderno y elegante, con áreas verdes bien cuidadas. Cielo azul y día soleado. Simboliza una comunidad bien gestionada. Iluminación natural y brillante. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-propiedad-horizontal-2.html
+Prompt: Fotografía realista de un administrador de propiedades entregando las llaves de un apartamento a una pareja joven y sonriente en la entrada del edificio. Ambiente positivo y acogedor. Luz natural. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-propiedad-horizontal-3.html
+Prompt: Fotografía realista de un área común de un edificio residencial (ej. un lobby, un pequeño parque o una terraza) donde varios vecinos conversan amigablemente. Ambiente de comunidad y buena convivencia. Paleta de colores cálidos. Sin texto ni logotipos. --no text words letters typography watermark
