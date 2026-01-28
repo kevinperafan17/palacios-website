@@ -60,3 +60,42 @@ Prompt: Fotografía realista de un administrador de propiedades entregando las l
 
 Archivo: blog-details-propiedad-horizontal-3.html
 Prompt: Fotografía realista de un área común de un edificio residencial (ej. un lobby, un pequeño parque o una terraza) donde varios vecinos conversan amigablemente. Ambiente de comunidad y buena convivencia. Paleta de colores cálidos. Sin texto ni logotipos. --no text words letters typography watermark
+---
+
+Archivo: blog-details-auditoria-4.html
+Prompt: Fotografía realista de un equipo de auditoría analizando tableros de control y reportes financieros en una sala de reuniones moderna. Pantallas con gráficos abstractos sin texto. Ambiente profesional, iluminación neutra, colores corporativos azules y grises. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-auditoria-5.html
+Prompt: Fotografía realista de un analista financiero revisando transacciones y documentos impresos junto a una pantalla con alertas visuales abstractas. Ambiente serio y ordenado, iluminación de oficina, tonos neutros. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-complementarios-4.html
+Prompt: Fotografía realista de un equipo revisando expedientes de proveedores y contratos en una mesa amplia, con laptops y carpetas organizadas. Ambiente profesional, luz natural, tonos neutros. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-complementarios-5.html
+Prompt: Fotografía realista de un archivo corporativo organizado con carpetas rotuladas sin texto visible y una laptop con un sistema de archivo digital abierto. Luz suave, ambiente ordenado. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-innovacion-4.html
+Prompt: Fotografía realista de un profesional usando una tablet frente a un panel de procesos automatizados con iconos abstractos. Oficina tecnológica, iluminación fría, tonos azules. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-innovacion-5.html
+Prompt: Fotografía realista de un analista observando proyecciones de datos en una gran pantalla con gráficos abstractos luminosos. Ambiente tecnológico, luz tenue, tonos azules y blancos. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-propiedad-horizontal-4.html
+Prompt: Fotografía realista de administradores revisando un presupuesto en una sala de reuniones de copropiedad, con documentos financieros y una calculadora. Luz natural, ambiente formal. Sin texto ni logotipos. --no text words letters typography watermark
+
+---
+
+Archivo: blog-details-propiedad-horizontal-5.html
+Prompt: Fotografía realista de técnicos realizando mantenimiento preventivo en un área común de edificio residencial, con herramientas ordenadas. Luz natural, ambiente seguro. Sin texto ni logotipos. --no text words letters typography watermark
