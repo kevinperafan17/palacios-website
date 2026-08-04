@@ -75,6 +75,7 @@
 
   
   function aosInit() {
+    if (typeof AOS === 'undefined') return;
     AOS.init({
       duration: 600,
       easing: 'ease-in-out',
@@ -85,12 +86,15 @@
   window.addEventListener('load', aosInit);
 
   
-  const glightbox = GLightbox({
-    selector: '.glightbox'
-  });
+  if (typeof GLightbox !== 'undefined') {
+    GLightbox({
+      selector: '.glightbox'
+    });
+  }
 
   
   function initSwiper() {
+    if (typeof Swiper === 'undefined') return;
     document.querySelectorAll(".init-swiper").forEach(function(swiperElement) {
       let config = JSON.parse(
         swiperElement.querySelector(".swiper-config").innerHTML.trim()
@@ -116,6 +120,7 @@
   
   let skillsAnimation = document.querySelectorAll('.skills-animation');
   skillsAnimation.forEach((item) => {
+    if (typeof Waypoint === 'undefined') return;
     new Waypoint({
       element: item,
       offset: '80%',
@@ -130,6 +135,7 @@
 
   
   document.querySelectorAll('.isotope-layout').forEach(function(isotopeItem) {
+    if (typeof imagesLoaded === 'undefined' || typeof Isotope === 'undefined') return;
     let layout = isotopeItem.getAttribute('data-layout') ?? 'masonry';
     let filter = isotopeItem.getAttribute('data-default-filter') ?? '*';
     let sort = isotopeItem.getAttribute('data-sort') ?? 'original-order';
@@ -194,5 +200,54 @@
   }
   window.addEventListener('load', navmenuScrollspy);
   document.addEventListener('scroll', navmenuScrollspy);
+
+  function trackConversion(eventName, service, element) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName, {
+        service_name: service || 'general',
+        link_url: element?.href || '',
+        page_location: window.location.href
+      });
+    }
+  }
+
+  document.querySelectorAll('[data-ga-event]').forEach((element) => {
+    const eventName = element.getAttribute('data-ga-event');
+    const service = element.getAttribute('data-ga-service');
+    element.addEventListener('click', () => trackConversion(eventName, service, element));
+  });
+
+  document.querySelectorAll('form[data-service]').forEach((form) => {
+    form.addEventListener('submit', () => {
+      trackConversion('lead_form_submit', form.getAttribute('data-service'), form);
+    });
+  });
+
+  const counters = document.querySelectorAll('[data-count]');
+  if (counters.length && 'IntersectionObserver' in window) {
+    const counterObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const raw = el.getAttribute('data-count') || '0';
+        const target = parseInt(raw, 10);
+        const suffix = el.textContent.replace(/[0-9]/g, '');
+        const start = performance.now();
+        const duration = 900;
+
+        function tick(now) {
+          const progress = Math.min((now - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = `${Math.round(target * eased)}${suffix}`;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.35 });
+
+    counters.forEach((counter) => counterObserver.observe(counter));
+  }
 
 })();

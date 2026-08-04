@@ -1,0 +1,42 @@
+[
+  {
+    "slug": "revisoria-fiscal",
+    "nav": "Revisoría Fiscal",
+    "title": "Revisoría Fiscal y Auditoría"
+  },
+  {
+    "slug": "propiedad-horizontal",
+    "nav": "Propiedad Horizontal",
+    "title": "Propiedad Horizontal"
+  },
+  {
+    "slug": "automatizacion-ia",
+    "nav": "Automatización e IA",
+    "title": "Automatización e IA"
+  },
+  {
+    "slug": "analitica-datos",
+    "nav": "Analítica de Datos",
+    "title": "Analítica de Datos"
+  },
+  {
+    "slug": "avaluos",
+    "nav": "Avalúos",
+    "title": "Avalúos"
+  },
+  {
+    "slug": "gestion-documental",
+    "nav": "Gestión Documental",
+    "title": "Gestión Documental"
+  },
+  {
+    "slug": "sagrilaft",
+    "nav": "SAGRILAFT",
+    "title": "SAGRILAFT"
+  },
+  {
+    "slug": "servicios-complementarios",
+    "nav": "Complementarios",
+    "title": "Servicios Complementarios"
+  }
+]
