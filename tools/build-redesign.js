@@ -182,7 +182,7 @@ function dock(service, message) {
   return `
 <aside class="conversion-dock" aria-label="Contacto rápido">
   <span class="conversion-dock__label">¿Revisamos su caso?</span>
-  <a href="${whatsapp(message)}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="${service}">${icon('whatsapp')} <span>WhatsApp</span></a>
+  <a href="${whatsapp(message)}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp" data-event="whatsapp_click" data-service="${service}">${icon('whatsapp')} <span>WhatsApp</span></a>
 </aside>`;
 }
 

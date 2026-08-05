@@ -73,8 +73,14 @@ node tools/validate-site.js
 npx --yes html-validate@9.7.1 index.html auditoria/index.html propiedad-horizontal/index.html innovacion/index.html blog/blog.html 404.html
 ```
 
+La auditoría responsive automatizada de proporciones puede ejecutarse indicando una carpeta de salida:
+
+```powershell
+node tools/audit-layout.js C:\ruta\capturas
+```
+
 ## Publicación
 
 El repositorio incluye `CNAME`, `robots.txt` y `sitemap.xml` para despliegue estático. Antes de producción deben confirmarse la política formal de tratamiento de datos, el funcionamiento de Analytics bajo el mecanismo de consentimiento aplicable y una prueba visual/Lighthouse en el entorno final.
 
-El informe detallado de implementación está en `INFORME_REDISENO_WEB_PALACIOS_CODEX.md`.
+El informe detallado de implementación está en `INFORME_REDISENO_WEB_PALACIOS_CODEX.md`. El refinamiento posterior de proporciones está documentado en `INFORME_REFINAMIENTO_PROPORCIONES_2026.md`.
