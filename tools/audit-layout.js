@@ -131,6 +131,10 @@ class CdpClient {
     });
   }
 
+  on(method, listener) {
+    this.listeners.set(method, [...(this.listeners.get(method) || []), listener]);
+  }
+
   close() {
     this.socket.close();
   }
@@ -179,6 +183,133 @@ const metricExpression = `JSON.stringify((() => {
   };
 })())`;
 
+async function evaluateValue(client, expression) {
+  const result = await client.send('Runtime.evaluate', {
+    expression,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  if (result.exceptionDetails) {
+    throw new Error(result.exceptionDetails.exception?.description || result.exceptionDetails.text || 'Error al evaluar el navegador.');
+  }
+  return result.result.value;
+}
+
+async function navigate(client, route) {
+  const loaded = client.waitFor('Page.loadEventFired');
+  await client.send('Page.navigate', { url: `http://127.0.0.1:${sitePort}${route}` });
+  await loaded;
+  await evaluateValue(client, 'document.fonts.ready.then(() => true)');
+  await new Promise((resolve) => setTimeout(resolve, 180));
+}
+
+async function runInteractionAudit(client) {
+  const checks = [];
+  const record = (pageName, viewport, name, pass, details) => {
+    checks.push({ page: pageName, viewport, name, pass: Boolean(pass), details });
+  };
+
+  for (const [pageName, route] of pages) {
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width: 1366,
+      height: 768,
+      deviceScaleFactor: 1,
+      mobile: false,
+      screenWidth: 1366,
+      screenHeight: 768,
+    });
+    await navigate(client, route);
+
+    const desktop = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
+      const actions = document.querySelector('.hero__actions')?.getBoundingClientRect();
+      const ctas = [...document.querySelectorAll('a[data-event]')];
+      const whatsapp = [...document.querySelectorAll('a[href^="https://wa.me/"]')];
+      return {
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        actionsVisible: Boolean(actions && actions.top >= 0 && actions.bottom <= innerHeight),
+        emptyCtas: ctas.filter((link) => !link.getAttribute('href')).length,
+        whatsappCount: whatsapp.length,
+        invalidWhatsapp: whatsapp.filter((link) => !link.href.startsWith('https://wa.me/')).length,
+      };
+    })())`));
+    record(pageName, '1366x768', 'Sin scroll horizontal', desktop.overflow === 0, desktop);
+    record(pageName, '1366x768', 'CTA del hero visible', desktop.actionsVisible, desktop);
+    record(pageName, '1366x768', 'CTA con destino válido', desktop.emptyCtas === 0, desktop);
+    record(pageName, '1366x768', 'Enlaces WhatsApp válidos', desktop.whatsappCount > 0 && desktop.invalidWhatsapp === 0, desktop);
+
+    await evaluateValue(client, 'scrollTo(0, 360); true');
+    await new Promise((resolve) => setTimeout(resolve, 120));
+    const sticky = await evaluateValue(client, `document.querySelector('[data-header]')?.classList.contains('is-scrolled') === true`);
+    record(pageName, '1366x768', 'Header sticky activo', sticky, { scrollY: 360 });
+    await evaluateValue(client, 'scrollTo(0, 0); true');
+
+    const faq = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
+      const detail = document.querySelector('.faq-list details');
+      if (!detail) return { available: false, opens: true };
+      detail.open = true;
+      return { available: true, opens: detail.open };
+    })())`));
+    record(pageName, '1366x768', 'FAQ interactivo', faq.opens, faq);
+
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width: 390,
+      height: 844,
+      deviceScaleFactor: 1,
+      mobile: true,
+      screenWidth: 390,
+      screenHeight: 844,
+    });
+    await navigate(client, route);
+    const opened = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
+      const toggle = document.querySelector('[data-nav-toggle]');
+      toggle?.click();
+      return {
+        open: document.querySelector('[data-nav]')?.classList.contains('is-open') === true,
+        expanded: toggle?.getAttribute('aria-expanded') === 'true',
+      };
+    })())`));
+    record(pageName, 'mobile', 'Menú móvil abre', opened.open && opened.expanded, opened);
+    const closed = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      const toggle = document.querySelector('[data-nav-toggle]');
+      return {
+        closed: document.querySelector('[data-nav]')?.classList.contains('is-open') === false,
+        collapsed: toggle?.getAttribute('aria-expanded') === 'false',
+      };
+    })())`));
+    record(pageName, 'mobile', 'Menú móvil cierra con Escape', closed.closed && closed.collapsed, closed);
+
+    const dock = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
+      const element = document.querySelector('.conversion-dock');
+      const box = element?.getBoundingClientRect();
+      return {
+        width: Math.round(box?.width || 0),
+        height: Math.round(box?.height || 0),
+        insideViewport: Boolean(box && box.right <= innerWidth && box.bottom <= innerHeight && box.left >= 0),
+        shortLabel: element?.innerText.includes('Chat') === true,
+      };
+    })())`));
+    record(pageName, 'mobile', 'WhatsApp compacto y visible', dock.width <= 110 && dock.height <= 64 && dock.insideViewport && dock.shortLabel, dock);
+  }
+
+  await client.send('Emulation.setDeviceMetricsOverride', {
+    width: 1024,
+    height: 768,
+    deviceScaleFactor: 1,
+    mobile: false,
+    screenWidth: 1024,
+    screenHeight: 768,
+  });
+  await navigate(client, '/');
+  const intermediateNav = JSON.parse(await evaluateValue(client, `JSON.stringify((() => ({
+    toggleVisible: getComputedStyle(document.querySelector('[data-nav-toggle]')).display !== 'none',
+    menuCollapsed: getComputedStyle(document.querySelector('[data-nav]')).visibility === 'hidden',
+  }))())`));
+  record('home', '1024x768', 'Navegación colapsa antes de comprimirse', intermediateNav.toggleVisible && intermediateNav.menuCollapsed, intermediateNav);
+
+  return checks;
+}
+
 async function main() {
   fs.mkdirSync(outputRoot, { recursive: true });
   const server = await startServer();
@@ -199,11 +330,29 @@ async function main() {
     await client.open();
     await client.send('Page.enable');
     await client.send('Runtime.enable');
+    await client.send('Network.enable');
+
+    const browserIssues = [];
+    let activeContext = 'inicio';
+    client.on('Runtime.exceptionThrown', (params) => {
+      browserIssues.push({
+        context: activeContext,
+        type: 'javascript',
+        message: params.exceptionDetails?.exception?.description || params.exceptionDetails?.text || 'Error JavaScript',
+      });
+    });
+    client.on('Network.responseReceived', (params) => {
+      const { response } = params;
+      if (response.url.startsWith(`http://127.0.0.1:${sitePort}`) && response.status >= 400) {
+        browserIssues.push({ context: activeContext, type: 'resource', status: response.status, url: response.url });
+      }
+    });
 
     const audit = {};
     for (const [pageName, route] of pages) {
       audit[pageName] = {};
       for (const [viewportName, width, height, mobile] of viewports) {
+        activeContext = `${pageName}:${viewportName}`;
         await client.send('Emulation.setDeviceMetricsOverride', {
           width,
           height,
@@ -266,9 +415,19 @@ async function main() {
       }
     }
 
+    activeContext = 'interaction-audit';
+    const interactionChecks = await runInteractionAudit(client);
+    const failedChecks = interactionChecks.filter((check) => !check.pass);
+
     fs.writeFileSync(path.join(outputRoot, 'metrics.json'), `${JSON.stringify(audit, null, 2)}\n`, 'utf8');
+    fs.writeFileSync(path.join(outputRoot, 'interaction-tests.json'), `${JSON.stringify(interactionChecks, null, 2)}\n`, 'utf8');
+    fs.writeFileSync(path.join(outputRoot, 'browser-issues.json'), `${JSON.stringify(browserIssues, null, 2)}\n`, 'utf8');
     client.close();
     console.log(`Auditoría visual guardada en ${outputRoot}`);
+    console.log(`Interacciones: ${interactionChecks.length - failedChecks.length}/${interactionChecks.length} correctas. Incidencias de navegador: ${browserIssues.length}.`);
+    if (failedChecks.length || browserIssues.length) {
+      throw new Error(`La auditoría detectó ${failedChecks.length} pruebas fallidas y ${browserIssues.length} incidencias de navegador.`);
+    }
   } finally {
     chrome.kill();
     server.close();
