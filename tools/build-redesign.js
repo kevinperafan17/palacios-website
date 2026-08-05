@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const domain = 'https://grupopalaciosasesores.com';
+const domain = 'https://www.grupopalaciosasesores.com';
 const phone = '573151816494';
 const displayPhone = '+57 315 181 6494';
 const displayPhoneHtml = '+57&nbsp;315&nbsp;181&nbsp;6494';
@@ -51,14 +51,40 @@ function icon(name) {
   return `<i class="bi bi-${name}" aria-hidden="true"></i>`;
 }
 
+function responsiveImageAttributes(image, sizes) {
+  if (!image.endsWith('.webp')) return '';
+  const stem = image.slice(0, -5);
+  return ` srcset="${stem}-640.webp 640w, ${stem}-1280.webp 1280w" sizes="${sizes}"`;
+}
+
+function responsiveCardImageAttributes(image, sizes) {
+  if (!image.endsWith('.webp')) return '';
+  const stem = image.slice(0, -5);
+  return ` srcset="${stem}-card-640.webp 640w, ${stem}-card-1024.webp 1024w" sizes="${sizes}"`;
+}
+
 function analytics() {
   return `
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7978WT0ESL"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    window.gtag = window.gtag || function(){dataLayer.push(arguments);};
     gtag('js', new Date());
     gtag('config', 'G-7978WT0ESL');
+    (function(){
+      var loaded = false;
+      function loadAnalytics(){
+        if (loaded) return;
+        loaded = true;
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-7978WT0ESL';
+        document.head.appendChild(script);
+      }
+      ['pointerdown', 'keydown'].forEach(function(eventName){
+        window.addEventListener(eventName, loadAnalytics, { once: true, passive: true });
+      });
+      window.addEventListener('load', function(){ setTimeout(loadAnalytics, 12000); }, { once: true });
+    })();
   </script>`;
 }
 
@@ -86,11 +112,10 @@ function head({ title, description, canonical, image = '/assets/img/logo.webp', 
   <meta name="theme-color" content="#111d39">
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="/assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="/assets/css/palacios-2026.css" rel="stylesheet">
+  <link rel="preload" href="/assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link href="/assets/css/palacios-icons.css" rel="stylesheet">
+  <link href="/assets/css/palacios-2026.min.css" rel="stylesheet">
 ${analytics()}
 ${schemas}
 </head>`;
@@ -115,12 +140,12 @@ function header(active = 'home', solid = false) {
 <header class="site-header${solid ? ' site-header--solid' : ''}" data-header>
   <div class="container site-header__inner">
     <a class="brand" href="/" aria-label="Palacios Asesores &amp; Revisores, inicio">
-      <img src="/assets/img/logo.webp" width="86" height="111" alt="">
+      <img src="/assets/img/logo.webp" srcset="/assets/img/logo-64.webp 64w, /assets/img/logo-128.webp 128w" sizes="43px" width="86" height="111" alt="" decoding="async">
       <span class="brand__name"><strong>Palacios</strong><span>Asesores &amp; Revisores</span></span>
     </a>
-    <nav class="site-nav" data-nav aria-label="Navegación principal"><ul>${nav}</ul></nav>
+    <nav class="site-nav" id="site-navigation" data-nav aria-label="Navegación principal"><ul>${nav}</ul></nav>
     <a class="button button--gold header-cta" href="${whatsapp('Hola, quiero solicitar una asesoría con Palacios Asesores & Revisores.')}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="general">Solicitar asesoría</a>
-    <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" data-nav-toggle><i class="bi bi-list" aria-hidden="true"></i></button>
+    <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-controls="site-navigation" aria-expanded="false" data-nav-toggle><i class="bi bi-list" aria-hidden="true"></i></button>
   </div>
 </header>`;
 }
@@ -132,7 +157,7 @@ function footer() {
     <div class="footer-grid">
       <div>
         <a class="brand" href="/" aria-label="Palacios Asesores &amp; Revisores, inicio">
-          <img src="/assets/img/logo.webp" width="86" height="111" alt="">
+          <img src="/assets/img/logo.webp" srcset="/assets/img/logo-64.webp 64w, /assets/img/logo-128.webp 128w" sizes="43px" width="86" height="111" alt="" loading="lazy" decoding="async">
           <span class="brand__name"><strong>Palacios</strong><span>Asesores &amp; Revisores</span></span>
         </a>
         <p class="site-footer__intro">Auditoría, gestión especializada y tecnología para organizaciones que necesitan decidir con control y confianza.</p>
@@ -170,17 +195,29 @@ function footer() {
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© <span data-current-year></span> Palacios Asesores &amp; Revisores. Todos los derechos reservados.</span>
+      <span>© <span data-current-year>2026</span> Palacios Asesores &amp; Revisores. Todos los derechos reservados.</span>
       <span>Colombia · Atención según alcance del servicio</span>
     </div>
   </div>
 </footer>
-<script src="/assets/js/palacios-2026.js" defer></script>`;
+<script>
+  (function(){
+    function loadRuntime(){
+      window.setTimeout(function(){
+        var script = document.createElement('script');
+        script.src = '/assets/js/palacios-2026.min.js';
+        document.body.appendChild(script);
+      }, 30);
+    }
+    if (document.readyState === 'complete') loadRuntime();
+    else window.addEventListener('load', loadRuntime, { once: true });
+  })();
+</script>`;
 }
 
 function dock(service, message) {
   return `
-<aside class="conversion-dock" aria-label="Contacto rápido">
+<aside class="conversion-dock is-suppressed" aria-label="Contacto rápido" aria-hidden="true" inert>
   <span class="conversion-dock__label">¿Revisamos su caso?</span>
   <a href="${whatsapp(message)}" target="_blank" rel="noopener" aria-label="Contactar por WhatsApp" data-event="whatsapp_click" data-service="${service}">${icon('whatsapp')} <span class="conversion-dock__desktop-label">WhatsApp</span><span class="conversion-dock__mobile-label">Chat</span></a>
 </aside>`;
@@ -574,7 +611,7 @@ ${header(service.active)}
         </ul>
       </div>
       <div class="service-visual reveal is-visible">
-        <img src="${service.image}" width="1280" height="732" alt="${service.navName} con enfoque profesional y tecnológico" fetchpriority="high">
+        <img src="${service.image}"${responsiveCardImageAttributes(service.image, '(max-width: 900px) calc(100vw - 32px), 46vw')} width="1280" height="732" alt="${service.navName} con enfoque profesional y tecnológico" fetchpriority="high" decoding="async">
         <div class="service-visual__caption"><strong>${service.navName}</strong><span>Solución especializada</span></div>
       </div>
     </div>
@@ -665,7 +702,7 @@ function buildHome() {
     <a class="text-link" href="/${service.slug}/" data-event="service_landing_click" data-service="${service.slug}">Explorar esta solución ${icon('arrow-right')}</a>
   </div>
   <a class="service-feature__visual reveal" href="/${service.slug}/" aria-label="Conocer ${service.navName}">
-    <img src="${service.image}" width="1280" height="732" alt="" loading="lazy">
+    <img src="${service.image}"${responsiveCardImageAttributes(service.image, '(max-width: 900px) calc(100vw - 32px), 48vw')} width="1280" height="732" alt="" loading="lazy" decoding="async">
     <span class="service-feature__tag">${icon(index === 0 ? 'shield-check' : index === 1 ? 'buildings' : 'cpu')} ${service.heroTag}</span>
   </a>
 </article>`).join('');
@@ -676,7 +713,7 @@ function buildHome() {
     ['Innovación', '2026-01-22', '22 Ene 2026', '/assets/img/blog/blog-details-innovacion-4.webp', 'Automatización de procesos con RPA: eficiencia real para su empresa', '/blog/blog-details-innovacion-4.html'],
   ].map(([category, date, dateLabel, image, title, href]) => `
 <article class="insight-card reveal">
-  <a class="insight-card__media" href="${href}" aria-label="Leer: ${title}"><img src="${image}" width="640" height="366" alt="" loading="lazy"></a>
+  <a class="insight-card__media" href="${href}" aria-label="Leer: ${title}"><img src="${image}"${responsiveImageAttributes(image, '(max-width: 680px) calc(100vw - 32px), (max-width: 1100px) 48vw, 32vw')} width="640" height="366" alt="" loading="lazy" decoding="async"></a>
   <div class="insight-card__body">
     <div class="insight-card__meta"><span>${category}</span><time datetime="${date}">${dateLabel}</time></div>
     <h3><a href="${href}">${title}</a></h3>
@@ -891,10 +928,10 @@ const blogPosts = [
 function buildBlog() {
   const cardsHtml = blogPosts.map(([category, categoryLabel, date, dateLabel, href, image, title]) => `
 <article class="insight-card reveal" data-blog-card data-category="${category}">
-  <a class="insight-card__media" href="/blog/${href}" aria-label="Leer: ${title}"><img src="/assets/img/blog/${image}" width="640" height="366" alt="" loading="lazy"></a>
+  <a class="insight-card__media" href="/blog/${href}" aria-label="Leer: ${title}"><img src="/assets/img/blog/${image}"${responsiveImageAttributes(`/assets/img/blog/${image}`, '(max-width: 680px) calc(100vw - 32px), (max-width: 1100px) 48vw, 32vw')} width="640" height="366" alt="" loading="lazy" decoding="async"></a>
   <div class="insight-card__body">
     <div class="insight-card__meta"><span>${categoryLabel}</span><time datetime="${date}">${dateLabel}</time></div>
-    <h3><a href="/blog/${href}">${title}</a></h3>
+    <h2><a href="/blog/${href}">${title}</a></h2>
     <a class="text-link" href="/blog/${href}">Leer análisis ${icon('arrow-right')}</a>
   </div>
 </article>`).join('');
@@ -946,6 +983,153 @@ ${dock('blog', 'Hola, leí un artículo del blog y quiero solicitar una asesorí
 </html>`;
 }
 
+function decodeHtml(value) {
+  return String(value)
+    .replaceAll('&amp;', '&')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>');
+}
+
+function articleService(category) {
+  const servicesByCategory = {
+    auditoria: ['/auditoria/', 'Auditoría'],
+    'propiedad-horizontal': ['/propiedad-horizontal/', 'Propiedad Horizontal'],
+    innovacion: ['/innovacion/', 'Innovación y Tecnología'],
+    complementarios: ['/#capacidades', 'Capacidades complementarias'],
+  };
+  return servicesByCategory[category] || ['/#soluciones', 'Servicios'];
+}
+
+function extractArticle(post) {
+  const [category, categoryLabel, date, dateLabel, filename, image, title] = post;
+  const source = fs.readFileSync(path.join(root, 'blog', filename), 'utf8');
+  const legacyBody = source.match(/<div class="content">([\s\S]*?)<\/div>\s*<!-- End post content -->/i);
+  const premiumBody = source.match(/<div class="article-prose">([\s\S]*?)<\/div>\s*<\/article>/i);
+  const bodyMatch = premiumBody || legacyBody;
+  if (!bodyMatch) throw new Error(`No fue posible extraer el contenido de blog/${filename}.`);
+
+  let body = bodyMatch[1]
+    .replace(/<!--([\s\S]*?)-->/g, '')
+    .replace(/\sclass="[^"]*"/g, '')
+    .replace(/<h3\b/g, '<h2')
+    .replace(/<\/h3>/g, '</h2>')
+    .trim();
+  const legacyLead = source.match(/<h2 class="title">([\s\S]*?)<\/h2>/i);
+  if (legacyBody && legacyLead) body = `<h2>${legacyLead[1].trim()}</h2>\n${body}`;
+
+  const descriptionMatch = source.match(/<meta name="description" content="([^"]+)"/i);
+  const altMatch = source.match(/<div class="post-img">[\s\S]*?<img[^>]+alt="([^"]*)"/i)
+    || source.match(/<figure class="article-cover">[\s\S]*?<img[^>]+alt="([^"]*)"/i);
+  const wordCount = body.replace(/<[^>]+>/g, ' ').trim().split(/\s+/).filter(Boolean).length;
+
+  return {
+    body,
+    category,
+    categoryLabel,
+    date,
+    dateLabel,
+    description: decodeHtml(descriptionMatch?.[1] || `Análisis de Palacios Asesores & Revisores sobre ${title}.`),
+    filename,
+    image,
+    imageAlt: decodeHtml(altMatch?.[1] || `Imagen relacionada con ${title}`),
+    readingMinutes: Math.max(3, Math.ceil(wordCount / 200)),
+    title,
+  };
+}
+
+function buildArticle(post) {
+  const article = extractArticle(post);
+  const [serviceUrl, serviceLabel] = articleService(article.category);
+  const related = blogPosts
+    .filter((candidate) => candidate[0] === article.category && candidate[4] !== article.filename)
+    .slice(0, 2)
+    .map((candidate) => `
+<article class="insight-card reveal">
+  <a class="insight-card__media" href="/blog/${candidate[4]}" aria-label="Leer: ${candidate[6]}"><img src="/assets/img/blog/${candidate[5]}"${responsiveImageAttributes(`/assets/img/blog/${candidate[5]}`, '(max-width: 680px) calc(100vw - 32px), 34vw')} width="1280" height="732" alt="" loading="lazy" decoding="async"></a>
+  <div class="insight-card__body">
+    <div class="insight-card__meta"><span>${candidate[1]}</span><time datetime="${candidate[2]}">${candidate[3]}</time></div>
+    <h3><a href="/blog/${candidate[4]}">${candidate[6]}</a></h3>
+    <a class="text-link" href="/blog/${candidate[4]}">Leer análisis ${icon('arrow-right')}</a>
+  </div>
+</article>`).join('');
+  const canonical = `/blog/${article.filename}`;
+  const image = `/assets/img/blog/${article.image}`;
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.description,
+    image: `${domain}${image}`,
+    datePublished: article.date,
+    dateModified: article.date,
+    mainEntityOfPage: `${domain}${canonical}`,
+    author: { '@type': 'Organization', name: 'Palacios Asesores & Revisores', url: domain },
+    publisher: { '@id': `${domain}/#organization` },
+  };
+
+  return `<!DOCTYPE html>
+<html lang="es-CO">
+${head({
+    title: `${article.title} | Palacios Asesores`,
+    description: article.description,
+    canonical,
+    image,
+    type: 'article',
+    schema: [organizationSchema, articleSchema],
+  })}
+<body>
+${header('blog', true)}
+<main id="contenido">
+  <section class="page-hero article-hero">
+    <div class="container">
+      <nav aria-label="Migas de pan"><ol class="breadcrumb"><li><a href="/">Inicio</a></li><li><a href="/blog/blog.html">Blog</a></li><li aria-current="page">${article.categoryLabel}</li></ol></nav>
+      <div class="article-hero__meta"><span>${article.categoryLabel}</span><time datetime="${article.date}">${article.dateLabel}</time><span>${article.readingMinutes} min de lectura</span></div>
+      <h1>${article.title}</h1>
+      <p>${article.description}</p>
+    </div>
+  </section>
+
+  <section class="section article-section">
+    <div class="container">
+      <figure class="article-cover reveal is-visible"><img src="${image}"${responsiveImageAttributes(image, '(max-width: 900px) calc(100vw - 32px), 1180px')} width="1280" height="732" alt="${escapeHtml(article.imageAlt)}" fetchpriority="high" decoding="async"></figure>
+      <div class="article-layout">
+        <article class="article-content">
+          <div class="article-prose">${article.body}</div>
+        </article>
+        <aside class="article-aside" aria-label="Información del artículo">
+          <div class="article-aside__card">
+            <span class="eyebrow">Aplicación práctica</span>
+            <h2>Conecte este análisis con una necesidad concreta.</h2>
+            <p>Podemos revisar el contexto, alcance y prioridad de su organización.</p>
+            <a class="button button--navy" href="${serviceUrl}" data-event="blog_service_click" data-service="${article.category}">Conocer ${serviceLabel}</a>
+          </div>
+          <a class="text-link" href="/blog/blog.html">${icon('arrow-left')} Volver a todos los análisis</a>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  ${related ? `<section class="section section--light"><div class="container"><div class="section-heading section-heading--single"><div><span class="eyebrow">Seguir explorando</span><h2>Otros análisis relacionados.</h2></div></div><div class="related-grid">${related}</div></div></section>` : ''}
+
+  <section class="section section--ink">
+    <div class="container section-heading section-heading--flush">
+      <div><span class="eyebrow">Del análisis a la acción</span><h2>¿Quiere revisar este tema en su organización?</h2></div>
+      <div class="cta-actions"><a class="button button--gold" href="${whatsapp(`Hola, leí el artículo “${article.title}” y quiero solicitar una asesoría.`)}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="${article.category}">${icon('whatsapp')} Conversar con el equipo</a></div>
+    </div>
+  </section>
+</main>
+${footer()}
+${dock(article.category, `Hola, leí el artículo “${article.title}” y quiero solicitar una asesoría.`)}
+</body>
+</html>`;
+}
+
+function buildArticles() {
+  blogPosts.forEach((post) => write(`blog/${post[4]}`, buildArticle(post)));
+}
+
 function build404() {
   return `<!DOCTYPE html>
 <html lang="es-CO">
@@ -967,7 +1151,19 @@ ${header('home')}
     </div>
   </div>
 </main>
-<script src="/assets/js/palacios-2026.js" defer></script>
+<script>
+  (function(){
+    function loadRuntime(){
+      window.setTimeout(function(){
+        var script = document.createElement('script');
+        script.src = '/assets/js/palacios-2026.min.js';
+        document.body.appendChild(script);
+      }, 30);
+    }
+    if (document.readyState === 'complete') loadRuntime();
+    else window.addEventListener('load', loadRuntime, { once: true });
+  })();
+</script>
 </body>
 </html>`;
 }
@@ -1004,20 +1200,39 @@ function buildSitemap() {
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(([url, priority]) => `  <url><loc>${domain}${url}</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`).join('\n')}
+${urls.map(([url, priority]) => `  <url><loc>${domain}${url}</loc><lastmod>2026-08-05</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`).join('\n')}
 </urlset>`;
 }
 
-write('index.html', buildHome());
-services.forEach((service) => write(`${service.slug}/index.html`, buildLanding(service)));
-write('blog/blog.html', buildBlog());
-write('404.html', build404());
-write('revisoria-fiscal/index.html', redirectPage('../auditoria/index.html', '/auditoria/', 'Auditoría'));
-write('automatizacion-ia/index.html', redirectPage('../innovacion/index.html', '/innovacion/', 'Innovación y Tecnología'));
-write('service-details-auditoria.html', redirectPage('auditoria/index.html', '/auditoria/', 'Auditoría'));
-write('service-details-propiedad-horizontal.html', redirectPage('propiedad-horizontal/index.html', '/propiedad-horizontal/', 'Propiedad Horizontal'));
-write('service-details-innovacion.html', redirectPage('innovacion/index.html', '/innovacion/', 'Innovación y Tecnología'));
-write('service-details-complementarios.html', redirectPage('servicios-complementarios/index.html', '/servicios-complementarios/', 'Servicios Complementarios'));
-write('sitemap.xml', buildSitemap());
+function buildCoreSite() {
+  write('index.html', buildHome());
+  services.forEach((service) => write(`${service.slug}/index.html`, buildLanding(service)));
+  write('blog/blog.html', buildBlog());
+  buildArticles();
+  write('404.html', build404());
+  write('revisoria-fiscal/index.html', redirectPage('../auditoria/index.html', '/auditoria/', 'Auditoría'));
+  write('automatizacion-ia/index.html', redirectPage('../innovacion/index.html', '/innovacion/', 'Innovación y Tecnología'));
+  write('service-details-auditoria.html', redirectPage('auditoria/index.html', '/auditoria/', 'Auditoría'));
+  write('service-details-propiedad-horizontal.html', redirectPage('propiedad-horizontal/index.html', '/propiedad-horizontal/', 'Propiedad Horizontal'));
+  write('service-details-innovacion.html', redirectPage('innovacion/index.html', '/innovacion/', 'Innovación y Tecnología'));
+  write('service-details-complementarios.html', redirectPage('servicios-complementarios/index.html', '/servicios-complementarios/', 'Servicios Complementarios'));
+  write('sitemap.xml', buildSitemap());
+  console.log('Sitio generado: home, landings, blog, artículos, 404, redirecciones y sitemap.');
+}
 
-console.log('Rediseño generado: home, 3 landings, blog, 404, redirecciones y sitemap.');
+if (require.main === module) buildCoreSite();
+
+module.exports = {
+  contactSection,
+  dock,
+  domain,
+  footer,
+  head,
+  header,
+  icon,
+  organizationSchema,
+  responsiveCardImageAttributes,
+  responsiveImageAttributes,
+  whatsapp,
+  write,
+};

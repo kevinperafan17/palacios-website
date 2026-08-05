@@ -144,6 +144,22 @@ La reducción máxima medida en viewports de escritorio fue de 31 %.
 - Cero desbordamientos horizontales.
 - HTML, referencias locales y scripts validados sin errores.
 
+## Validación en el dominio público
+
+La publicación en `https://www.grupopalaciosasesores.com/` se auditó directamente después del despliegue, no mediante el servidor local.
+
+- `index.html`, las tres landings, `palacios-2026.css` y `palacios-2026.js` responden con estado HTTP 200.
+- Los seis archivos públicos comparados tienen el mismo hash SHA-256 que sus equivalentes del proyecto; no hay una versión anterior ni una hoja de estilos desactualizada en producción.
+- Se repitieron las 24 combinaciones visuales contra el dominio público.
+- Las 37 pruebas públicas de navegación e interacción fueron correctas.
+- No se detectaron excepciones JavaScript ni recursos propios con respuestas 4xx o 5xx.
+- No se detectó scroll horizontal en escritorio, portátil, tablet o móvil.
+- En 1920 × 1080 el hero de inicio ocupa 771 px (71 % del viewport) y deja visibles 309 px de la sección siguiente.
+- En 1366 × 768 el hero de inicio ocupa 709 px (92 % del viewport); título, CTA, beneficios y dashboard permanecen visibles.
+- En móvil el contenido se apila correctamente, los CTA conservan área táctil suficiente y el acceso a WhatsApp usa la etiqueta compacta `Chat`.
+
+El script `tools/audit-layout.js` admite ahora `--base-url=` para repetir esta comprobación directamente contra producción en futuras publicaciones.
+
 ## Pendientes
 
 No quedan bloqueos para los criterios de aceptación definidos.

@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+const shared = require('./build-redesign');
 
 const root = path.resolve(__dirname, '..');
 const phone = '573151816494';
 const displayPhone = '+57 315 181 6494';
 const email = 'contacto@grupopalaciosasesores.com';
 const brand = 'Palacios Asesores & Revisores';
-const baseUrl = 'https://grupopalaciosasesores.com';
+const baseUrl = 'https://www.grupopalaciosasesores.com';
 
 const services = [
   {
@@ -272,286 +273,136 @@ function schema(service) {
   return `<script type="application/ld+json">${JSON.stringify(serviceSchema)}</script>\n  <script type="application/ld+json">${JSON.stringify(faqSchema)}</script>`;
 }
 
+function normalizeImage(image) {
+  return `/${image.replace(/^\.\.\//, '')}`;
+}
+
+function serviceSchema(service) {
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Service',
+        '@id': `${baseUrl}/${service.slug}/#service`,
+        name: service.title,
+        description: service.metaDescription,
+        serviceType: service.title,
+        url: `${baseUrl}/${service.slug}/`,
+        image: `${baseUrl}${normalizeImage(service.image)}`,
+        provider: { '@id': `${baseUrl}/#professional-service` },
+        areaServed: { '@type': 'Country', name: 'Colombia' },
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: `${baseUrl}/` },
+          { '@type': 'ListItem', position: 2, name: service.title, item: `${baseUrl}/${service.slug}/` },
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: service.faqs.map(([question, answer]) => ({
+          '@type': 'Question',
+          name: question,
+          acceptedAnswer: { '@type': 'Answer', text: answer },
+        })),
+      },
+    ],
+  };
+}
+
+function card(iconName, title, text, className = 'pain-card') {
+  return `<article class="${className} reveal">${shared.icon(iconName)}<h3>${esc(title)}</h3><p>${esc(text)}</p></article>`;
+}
+
 function page(service) {
-  const whatsapp = `https://wa.me/${phone}?text=${message(service)}`;
+  const image = normalizeImage(service.image);
+  const whatsappUrl = shared.whatsapp(`Hola, quiero una asesoría sobre ${service.title}.`);
+  const process = ['Entender', 'Priorizar', 'Ejecutar', 'Acompañar'];
+  const faqs = service.faqs.map(([question, answer], index) => `
+<details${index === 0 ? ' open' : ''}>
+  <summary>${esc(question)}</summary>
+  <p>${esc(answer)}</p>
+</details>`).join('');
+
   return `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>${esc(service.metaTitle)}</title>
-  <meta name="description" content="${esc(service.metaDescription)}">
-  <meta name="keywords" content="${esc([service.title, ...service.metrics].join(', '))}">
-  <link rel="canonical" href="${baseUrl}/${service.slug}/">
-  <meta property="og:title" content="${esc(service.metaTitle)}">
-  <meta property="og:description" content="${esc(service.metaDescription)}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="${baseUrl}/${service.slug}/">
-  <meta property="og:image" content="${baseUrl}/${service.image.replace('../', '')}">
-  <meta name="twitter:card" content="summary_large_image">
-  <link href="../assets/img/favicon.png" rel="icon">
-  <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=Jost:wght@600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="../assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="../assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="../assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="../assets/css/main.css" rel="stylesheet">
-  ${schema(service)}
-</head>
-<body class="landing-page future-page">
-  <header id="header" class="header d-flex align-items-center sticky-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center">
-      <a href="../index.html" class="logo d-flex align-items-center me-auto"><img src="../assets/img/logo.webp" alt="${brand}"></a>
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="../index.html#hero">Inicio</a></li>
-          <li><a href="../index.html#about">Nosotros</a></li>
-          <li class="dropdown"><a href="../index.html#services"><span>Servicios</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              ${nav(service.slug)}
-            </ul>
-          </li>
-          <li><a href="../blog/blog.html">Blog</a></li>
-          <li><a href="#contacto">Contacto</a></li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-      <a class="btn-getstarted d-none d-xl-inline-flex" href="${whatsapp}" target="_blank" data-ga-event="whatsapp_click" data-ga-service="${service.slug}">WhatsApp</a>
-    </div>
-  </header>
-
-  <main class="main">
-    <section class="future-hero">
-      <div class="hero-mesh" aria-hidden="true"></div>
-      <div class="container">
-        <div class="row align-items-center gy-5">
-          <div class="col-lg-7" data-aos="fade-up">
-            <div class="future-eyebrow"><i class="bi ${service.icon}"></i>${esc(service.accent)}</div>
-            <h1>${esc(service.h1)}</h1>
-            <p>${esc(service.subtitle)}</p>
-            <div class="future-actions">
-              <a href="${whatsapp}" target="_blank" class="future-btn primary" data-ga-event="whatsapp_click" data-ga-service="${service.slug}"><i class="fab fa-whatsapp"></i> Solicitar asesoría</a>
-              <a href="#lead-form" class="future-btn secondary" data-ga-event="form_intent" data-ga-service="${service.slug}"><i class="bi bi-arrow-right"></i> Ver diagnóstico</a>
-            </div>
-            <div class="future-proof">
-              ${service.metrics.map((metric) => `<span>${esc(metric)}</span>`).join('\n              ')}
-            </div>
-          </div>
-          <div class="col-lg-5" data-aos="zoom-in" data-aos-delay="120">
-            <div class="intelligence-panel">
-              <div class="panel-top">
-                <span>${esc(service.title)}</span>
-                <i class="bi bi-stars"></i>
-              </div>
-              <img src="${service.image}" alt="${esc(service.title)}" loading="eager" fetchpriority="high">
-              <div class="signal-card signal-one"><strong>01</strong><span>Diagnóstico</span></div>
-              <div class="signal-card signal-two"><strong>AI</strong><span>Control aumentado</span></div>
-              <div class="panel-bottom">
-                <div><span>Riesgo</span><strong>Reducido</strong></div>
-                <div><span>Proceso</span><strong>Trazable</strong></div>
-              </div>
-            </div>
-          </div>
+<html lang="es-CO">
+${shared.head({
+    title: service.metaTitle,
+    description: service.metaDescription,
+    canonical: `/${service.slug}/`,
+    image,
+    schema: [shared.organizationSchema, serviceSchema(service)],
+  })}
+<body>
+${shared.header('services')}
+<main id="contenido">
+  <section class="hero inner-hero capability-hero" data-spotlight>
+    <div class="container hero__grid">
+      <div class="reveal is-visible">
+        <nav aria-label="Migas de pan"><ol class="breadcrumb"><li><a href="/">Inicio</a></li><li aria-current="page">${esc(service.title)}</li></ol></nav>
+        <span class="eyebrow">${esc(service.accent)}</span>
+        <h1>${esc(service.h1)}</h1>
+        <p class="hero__lead">${esc(service.subtitle)}</p>
+        <div class="hero__actions">
+          <a class="button button--gold" href="#contacto" data-event="cta_primary" data-service="${service.slug}">${shared.icon('arrow-right')} Solicitar asesoría</a>
+          <a class="button button--ghost" href="${whatsappUrl}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="${service.slug}">${shared.icon('whatsapp')} Hablar con un especialista</a>
         </div>
+        <ul class="trust-strip">${service.metrics.map((metric) => `<li>${shared.icon('check2-circle')} ${esc(metric)}</li>`).join('')}</ul>
       </div>
-    </section>
-
-    <section class="future-section">
-      <div class="container">
-        <div class="future-section-head" data-aos="fade-up">
-          <span>Problemas que resolvemos</span>
-          <h2>Lo que cuesta operar sin control, datos ni evidencia</h2>
-        </div>
-        <div class="problem-grid">
-          ${service.problems.map((item, index) => `<article class="future-card problem-card" data-aos="fade-up" data-aos-delay="${index * 70}"><div class="card-index">0${index + 1}</div><h3>${esc(item)}</h3><p>La consecuencia suele aparecer tarde: más costos, más fricción y menos capacidad de decisión.</p></article>`).join('\n          ')}
-        </div>
-      </div>
-    </section>
-
-    <section class="future-section solution-stage">
-      <div class="container">
-        <div class="row gy-5 align-items-center">
-          <div class="col-lg-5" data-aos="fade-right">
-            <span class="future-label">Solución Palacios</span>
-            <h2>Una intervención diseñada para convertir complejidad en decisiones claras</h2>
-            <p>${esc(service.solution)}</p>
-            <a href="${whatsapp}" target="_blank" class="future-btn primary compact" data-ga-event="whatsapp_click" data-ga-service="${service.slug}">Hablar con un asesor</a>
-          </div>
-          <div class="col-lg-7" data-aos="fade-left">
-            <div class="solution-orchestrator">
-              ${service.benefits.map((item, index) => `<div class="orchestrator-row"><span>0${index + 1}</span><strong>${esc(item)}</strong><i class="bi bi-arrow-up-right"></i></div>`).join('\n              ')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="future-section metrics-stage">
-      <div class="container">
-        <div class="future-section-head" data-aos="fade-up">
-          <span>Beneficios medibles</span>
-          <h2>Indicadores que una firma tradicional no suele mostrar con claridad</h2>
-        </div>
-        <div class="metric-grid">
-          <div class="metric-tile" data-aos="fade-up"><strong data-count="40">40%</strong><span>menos reprocesos potenciales</span></div>
-          <div class="metric-tile" data-aos="fade-up" data-aos-delay="80"><strong data-count="4">4x</strong><span>más visibilidad sobre riesgos</span></div>
-          <div class="metric-tile" data-aos="fade-up" data-aos-delay="160"><strong data-count="24">24h</strong><span>respuesta comercial prioritaria</span></div>
-          <div class="metric-tile" data-aos="fade-up" data-aos-delay="240"><strong data-count="100">100%</strong><span>enfoque documentado y trazable</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="future-section process-stage">
-      <div class="container">
-        <div class="future-section-head" data-aos="fade-up">
-          <span>Proceso</span>
-          <h2>Un flujo visual, simple y diseñado para avanzar sin fricción</h2>
-        </div>
-        <div class="process-flow">
-          <div data-aos="fade-up"><i class="bi bi-search"></i><h3>Mapear</h3><p>Levantamos contexto, información y puntos críticos.</p></div>
-          <div data-aos="fade-up" data-aos-delay="80"><i class="bi bi-diagram-3"></i><h3>Diseñar</h3><p>Definimos alcance, riesgos, responsables y entregables.</p></div>
-          <div data-aos="fade-up" data-aos-delay="160"><i class="bi bi-lightning-charge"></i><h3>Ejecutar</h3><p>Intervenimos con metodología, evidencia y comunicación clara.</p></div>
-          <div data-aos="fade-up" data-aos-delay="240"><i class="bi bi-graph-up-arrow"></i><h3>Escalar</h3><p>Entregamos recomendaciones, seguimiento y próximos pasos.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="future-section credibility-stage">
-      <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-5" data-aos="fade-up">
-            <span class="future-label">Credibilidad + tecnología</span>
-            <h2>Consultoría con mentalidad de producto digital</h2>
-            <p>Unimos experiencia profesional, análisis, automatización y acompañamiento cercano para que cada entrega sea entendible, accionable y defendible.</p>
-          </div>
-          <div class="col-lg-7">
-            <div class="cred-grid">
-              <div data-aos="fade-up"><i class="bi bi-people"></i><h3>Equipo multidisciplinario</h3><p>Auditoría, tecnología, riesgos, gestión y documentación.</p></div>
-              <div data-aos="fade-up" data-aos-delay="80"><i class="bi bi-shield-check"></i><h3>Criterio profesional</h3><p>Enfoque ético, normativo y orientado a evidencia.</p></div>
-              <div data-aos="fade-up" data-aos-delay="160"><i class="bi bi-cpu"></i><h3>Tecnología aplicada</h3><p>Automatización, tableros y datos donde generen retorno.</p></div>
-              <div data-aos="fade-up" data-aos-delay="240"><i class="bi bi-chat-square-text"></i><h3>Acompañamiento</h3><p>Comunicación clara para gerencias, consejos y equipos.</p></div>
-            </div>
-          </div>
-        </div>
-        <div class="usecase-ribbon" data-aos="fade-up">
-          ${service.useCases.map((item) => `<span>${esc(item)}</span>`).join('\n          ')}
-        </div>
-      </div>
-    </section>
-
-    <section class="future-section faq-stage">
-      <div class="container">
-        <div class="row gy-5">
-          <div class="col-lg-4" data-aos="fade-up">
-            <span class="future-label">FAQ SEO + IA</span>
-            <h2>Preguntas que ayudan a decidir y a posicionar</h2>
-            <p>Respuestas claras, estructuradas y listas para buscadores modernos.</p>
-          </div>
-          <div class="col-lg-8">
-            <div class="faq-container future-faq">
-              ${service.faqs.map(([q, a]) => `<div class="faq-item"><h3>${esc(q)}</h3><div class="faq-content"><p>${esc(a)}</p></div><i class="faq-toggle bi bi-chevron-right"></i></div>`).join('\n              ')}
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="contacto" class="future-final-cta">
-      <div class="container">
-        <div class="cta-shell" data-aos="zoom-in">
-          <div>
-            <span class="future-label">Siguiente paso</span>
-            <h2>Convierte esta necesidad en un plan de acción</h2>
-            <p>Agenda una conversación corta. Identificamos prioridad, alcance y el mejor camino para avanzar.</p>
-            <div class="future-actions">
-              <a href="${whatsapp}" target="_blank" class="future-btn primary" data-ga-event="whatsapp_click" data-ga-service="${service.slug}"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-              <a href="mailto:${email}" class="future-btn secondary" data-ga-event="email_click" data-ga-service="${service.slug}"><i class="bi bi-envelope"></i> Correo</a>
-            </div>
-          </div>
-          <form id="lead-form" class="future-form" action="mailto:${email}" method="post" enctype="text/plain" data-service="${service.slug}">
-            <label>Nombre<input type="text" name="nombre" autocomplete="name" required></label>
-            <label>Correo<input type="email" name="correo" autocomplete="email" required></label>
-            <label>Teléfono<input type="tel" name="telefono" autocomplete="tel" required></label>
-            <label>Necesidad<textarea name="mensaje" rows="4" required>Quiero información sobre ${esc(service.title)}.</textarea></label>
-            <button type="submit" data-ga-event="lead_form_submit" data-ga-service="${service.slug}"><i class="bi bi-send"></i> Enviar solicitud</button>
-          </form>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer id="footer" class="footer">
-    <div class="container footer-top">
-      <div class="row gy-4">
-        <div class="col-lg-4 col-md-6 footer-about">
-          <a href="../index.html" class="d-flex align-items-center"><span class="sitename">${brand}</span></a>
-          <div class="footer-contact pt-3">
-            <p><strong>Teléfono:</strong> <a href="tel:+573151816494" data-ga-event="phone_click" data-ga-service="${service.slug}">${displayPhone}</a></p>
-            <p><strong>Email:</strong> <a href="mailto:${email}" data-ga-event="email_click" data-ga-service="${service.slug}">${email}</a></p>
-          </div>
-        </div>
-        <div class="col-lg-4 col-md-6 footer-links">
-          <h4>Servicios</h4>
-          <ul>
-            ${services.map((item) => `<li><i class="bi bi-chevron-right"></i> <a href="../${item.slug}/">${item.nav}</a></li>`).join('\n            ')}
-          </ul>
-        </div>
-        <div class="col-lg-4 col-md-12">
-          <h4>Síguenos</h4>
-          <p>Contenido, novedades y formas de contacto directo.</p>
-          <div class="social-links d-flex">
-            <a href="${whatsapp}" target="_blank" data-ga-event="whatsapp_click" data-ga-service="${service.slug}"><i class="fab fa-whatsapp"></i></a>
-            <a href="https://www.tiktok.com/@palacios.asesores2" target="_blank"><i class="fab fa-tiktok"></i></a>
-            <a href="https://www.instagram.com/palaciosasesores?igsh=NjF5YjIzOW1ncmQ3" target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://www.facebook.com/share/1GogRVpA3k/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-          </div>
-        </div>
+      <div class="service-visual reveal is-visible">
+        <img src="${image}"${shared.responsiveCardImageAttributes(image, '(max-width: 900px) calc(100vw - 32px), 46vw')} width="1280" height="732" alt="${esc(service.title)} con enfoque profesional" fetchpriority="high" decoding="async">
+        <div class="service-visual__caption"><strong>${esc(service.title)}</strong><span>Capacidad especializada</span></div>
       </div>
     </div>
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">${brand}</strong> <span>Todos los derechos reservados</span></p>
-    </div>
-  </footer>
+  </section>
 
-  <div class="sticky-conversion-bar">
-    <span>${esc(service.title)}</span>
-    <a href="${whatsapp}" target="_blank" data-ga-event="whatsapp_click" data-ga-service="${service.slug}">Agendar</a>
-  </div>
-  <a href="${whatsapp}" target="_blank" class="floating-whatsapp premium" aria-label="Solicitar asesoría por WhatsApp" data-ga-event="whatsapp_click" data-ga-service="${service.slug}"><i class="fab fa-whatsapp"></i><span>Asesoría</span></a>
-  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
-  <script src="../assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/vendor/aos/aos.js"></script>
-  <script src="../assets/js/main.js"></script>
+  <section class="section">
+    <div class="container">
+      <div class="section-heading"><div><span class="eyebrow">El reto</span><h2>Brechas que reducen control y capacidad de respuesta.</h2></div><p>Identificamos el problema antes de proponer herramientas, entregables o metodologías.</p></div>
+      <div class="pain-grid pain-grid--four">${service.problems.map((problem) => card('exclamation-diamond', problem, 'La falta de atención oportuna aumenta fricción, reprocesos y exposición.')).join('')}</div>
+    </div>
+  </section>
+
+  <section class="section section--light">
+    <div class="container">
+      <div class="section-heading"><div><span class="eyebrow">Nuestra respuesta</span><h2>Una solución definida alrededor del contexto.</h2></div><p>${esc(service.solution)}</p></div>
+      <div class="solution-grid solution-grid--four">${service.benefits.map((benefit, index) => `<article class="solution-card reveal"><span class="solution-card__label">Beneficio ${String(index + 1).padStart(2, '0')}</span><h3>${esc(benefit)}</h3><p>El alcance, las evidencias y los responsables se precisan antes de iniciar.</p></article>`).join('')}</div>
+      <div class="cta-actions cta-actions--spaced"><a class="button button--navy" href="#contacto" data-event="cta_after_solutions" data-service="${service.slug}">Revisar esta necesidad</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading"><div><span class="eyebrow">Proceso</span><h2>Cuatro momentos para avanzar con claridad.</h2></div><p>La profundidad cambia según el servicio; la lógica de trabajo se mantiene visible y documentada.</p></div>
+      <div class="method-grid method-grid--four">${process.map((step) => `<article class="method-card reveal"><h3>${step}</h3></article>`).join('')}</div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="container">
+      <div class="section-heading"><div><span class="eyebrow">Aplicación</span><h2>Una capacidad útil para decisiones y responsables concretos.</h2></div><p>Adaptamos lenguaje, alcance y entregables al entorno donde se utilizará la información.</p></div>
+      <div class="outcome-grid outcome-grid--four">${service.useCases.map((useCase) => card('person-check', useCase, 'El acompañamiento se ajusta al rol, necesidad y nivel de decisión.', 'outcome-card')).join('')}</div>
+    </div>
+  </section>
+
+  <section class="section section--light" data-service="${service.slug}">
+    <div class="container faq-layout">
+      <div class="faq-layout__intro"><span class="eyebrow">Preguntas frecuentes</span><h2>Información útil antes de definir el alcance.</h2><p>Si su caso necesita una respuesta específica, conversemos sobre el contexto.</p></div>
+      <div class="faq-list">${faqs}</div>
+    </div>
+  </section>
+
+  ${shared.contactSection(service.slug, service.title, `Conversemos sobre ${service.title.toLowerCase()}.`, `Quiero información sobre ${service.title}.`)}
+</main>
+${shared.footer()}
+${shared.dock(service.slug, `Hola, quiero una asesoría sobre ${service.title}.`)}
 </body>
-</html>
-`;
+</html>`;
 }
 
-for (const service of services) {
-  const dir = path.join(root, service.slug);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, 'index.html'), page(service), 'utf8');
-}
-
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>${baseUrl}/</loc></url>
-  <url><loc>${baseUrl}/blog/blog.html</loc></url>
-${services.map((service) => `  <url><loc>${baseUrl}/${service.slug}/</loc></url>`).join('\n')}
-</urlset>
-`;
-fs.writeFileSync(path.join(root, 'sitemap.xml'), sitemap, 'utf8');
-
-const robots = `User-agent: *
-Allow: /
-Disallow: /tools/
-Sitemap: ${baseUrl}/sitemap.xml
-`;
-fs.writeFileSync(path.join(root, 'robots.txt'), robots, 'utf8');
-
+const secondarySlugs = new Set(['analitica-datos', 'avaluos', 'gestion-documental', 'sagrilaft', 'servicios-complementarios']);
+const secondaryServices = services.filter((service) => secondarySlugs.has(service.slug));
+secondaryServices.forEach((service) => shared.write(`${service.slug}/index.html`, page(service)));
 fs.writeFileSync(path.join(root, 'tools', 'premium-services.json'), JSON.stringify(services.map(({ slug, nav, title }) => ({ slug, nav, title })), null, 2), 'utf8');
-
-console.log(`Generated ${services.length} premium landing pages.`);
+console.log(`Generadas ${secondaryServices.length} páginas de capacidades con el sistema visual actual.`);

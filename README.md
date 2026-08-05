@@ -21,20 +21,21 @@ El portafolio se complementa con avalúos, gestión documental, SAGRILAFT/LAFT-S
 - `/blog/blog.html`: biblioteca de contenidos con búsqueda y filtros.
 - `/analitica-datos/`, `/avaluos/`, `/gestion-documental/`, `/sagrilaft/` y `/servicios-complementarios/`: páginas de capacidades adicionales.
 
-Las rutas antiguas de auditoría e innovación permanecen como redirecciones compatibles hacia las nuevas URLs canónicas.
+Las rutas antiguas permanecen como redirecciones compatibles hacia las URLs canónicas.
 
 ## Tecnología
 
-El proyecto se mantiene como sitio estático:
+El proyecto es un sitio estático:
 
 - HTML5 semántico.
-- CSS personalizado en `assets/css/palacios-2026.css`.
-- JavaScript sin framework en `assets/js/palacios-2026.js`.
-- Bootstrap Icons como biblioteca de iconografía.
-- Google Analytics 4 con el identificador existente del proyecto.
+- CSS fuente en `assets/css/palacios-2026.css` y versión minificada para producción.
+- JavaScript sin framework en `assets/js/palacios-2026.js` y versión minificada.
+- Tipografías corporativas alojadas localmente.
+- Subconjunto local de Bootstrap Icons con solo los glifos utilizados.
+- Google Analytics 4 con carga diferida y seguimiento de conversiones.
 - JSON-LD para `Organization`, `ProfessionalService`, `Service`, `FAQPage`, `BreadcrumbList` y `Article` cuando corresponde.
 
-Las nuevas páginas no dependen de Bootstrap, AOS, Swiper ni librerías de animación. Las páginas históricas conservan solo las dependencias que necesitan.
+Las 31 páginas activas comparten el mismo sistema visual y no dependen de Bootstrap, AOS, Swiper, Font Awesome ni librerías de animación. Seis rutas históricas permanecen como redirecciones ligeras.
 
 ## Formularios
 
@@ -48,39 +49,37 @@ También están disponibles teléfono y correo como canales alternativos.
 
 ## Desarrollo local
 
-El sitio también puede revisarse abriendo `index.html` directamente con el navegador. Los recursos y enlaces internos usan rutas relativas compatibles con `file://` y con despliegue web.
-
-Para probar el comportamiento de las rutas publicadas, desde la raíz del proyecto:
-
 ```powershell
 python -m http.server 4173 --bind 127.0.0.1
 ```
 
 Abrir `http://127.0.0.1:4173/`.
 
-## Regenerar páginas
+## Producción
+
+La construcción completa regenera páginas, crea variantes responsive de imágenes, construye el subconjunto de iconos, minifica CSS/JS y valida el resultado:
 
 ```powershell
-node tools/build-redesign.js
-node tools/upgrade-blog-articles.js
-node tools/fix-links.js
+powershell -ExecutionPolicy Bypass -File tools/build-production.ps1
+```
+
+Para simular compresión y caché de producción durante Lighthouse:
+
+```powershell
+node tools/serve-production.js 4175
 ```
 
 ## Validación
 
 ```powershell
 node tools/validate-site.js
-npx --yes html-validate@9.7.1 index.html auditoria/index.html propiedad-horizontal/index.html innovacion/index.html blog/blog.html 404.html
-```
-
-La auditoría responsive automatizada de proporciones puede ejecutarse indicando una carpeta de salida:
-
-```powershell
 node tools/audit-layout.js C:\ruta\capturas
 ```
 
+La matriz completa puede ejecutarse con `--all-pages`; `--smoke-only` reduce viewports y `--no-screenshots` realiza una validación funcional sin generar capturas.
+
 ## Publicación
 
-El repositorio incluye `CNAME`, `robots.txt` y `sitemap.xml` para despliegue estático. Antes de producción deben confirmarse la política formal de tratamiento de datos, el funcionamiento de Analytics bajo el mecanismo de consentimiento aplicable y una prueba visual/Lighthouse en el entorno final.
+El repositorio incluye `CNAME`, `robots.txt` y `sitemap.xml` para despliegue estático. Antes de producción deben confirmarse la política formal de tratamiento de datos, el consentimiento aplicable para Analytics y una prueba Lighthouse sobre el dominio publicado.
 
-El informe detallado de implementación está en `INFORME_REDISENO_WEB_PALACIOS_CODEX.md`. El refinamiento final está documentado en `INFORME_REFINAMIENTO_DISENO.md` y sus métricas ampliadas en `INFORME_REFINAMIENTO_PROPORCIONES_2026.md`.
+El informe final se encuentra en `AUDITORIA_FINAL_PREMIUM.md`.

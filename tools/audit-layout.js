@@ -5,25 +5,64 @@ const os = require('os');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const outputRoot = path.resolve(process.argv[2] || path.join(os.tmpdir(), 'palacios-layout-audit'));
+const cliArguments = process.argv.slice(2);
+const baseUrlArgument = cliArguments.find((argument) => argument.startsWith('--base-url='));
+const outputArgument = cliArguments.find((argument) => !argument.startsWith('--'));
+const auditAllPages = cliArguments.includes('--all-pages');
+const smokeOnly = cliArguments.includes('--smoke-only');
+const screenshotsEnabled = !cliArguments.includes('--no-screenshots');
+const outputRoot = path.resolve(outputArgument || path.join(os.tmpdir(), 'palacios-layout-audit'));
 const sitePort = 4174;
 const debugPort = 9224;
+const siteBaseUrl = (baseUrlArgument
+  ? baseUrlArgument.slice('--base-url='.length)
+  : `http://127.0.0.1:${sitePort}`).replace(/\/$/, '');
+const usesLocalServer = !baseUrlArgument;
+const siteOrigin = new URL(siteBaseUrl).origin;
 
-const pages = [
+const representativePages = [
   ['home', '/'],
   ['auditoria', '/auditoria/'],
   ['propiedad-horizontal', '/propiedad-horizontal/'],
   ['innovacion', '/innovacion/'],
+  ['analitica-datos', '/analitica-datos/'],
+  ['blog', '/blog/blog.html'],
+  ['articulo', '/blog/blog-details-auditoria.html'],
+  ['404', '/404.html'],
 ];
 
-const viewports = [
+function discoverPages(directory = root) {
+  return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    if (entry.name.startsWith('.') || entry.name === 'tools') return [];
+    const fullPath = path.join(directory, entry.name);
+    if (entry.isDirectory()) return discoverPages(fullPath);
+    if (!entry.name.endsWith('.html')) return [];
+    const relative = path.relative(root, fullPath).replaceAll('\\', '/');
+    const route = relative === 'index.html'
+      ? '/'
+      : `/${relative.replace(/index\.html$/, '')}`;
+    return [[relative.replace(/\.html$/, '').replaceAll('/', '--'), route]];
+  });
+}
+
+const pages = auditAllPages ? discoverPages() : representativePages;
+
+const interactionRoutes = new Set(['/', '/auditoria/', '/propiedad-horizontal/', '/innovacion/', '/analitica-datos/']);
+const interactionPages = pages.filter(([, route]) => interactionRoutes.has(route));
+
+const completeViewports = [
+  ['2560x1440', 2560, 1440, false],
   ['1920x1080', 1920, 1080, false],
   ['1600x900', 1600, 900, false],
   ['1440x900', 1440, 900, false],
   ['1366x768', 1366, 768, false],
   ['tablet', 768, 1024, true],
   ['mobile', 390, 844, true],
+  ['small-mobile', 320, 568, true],
 ];
+const viewports = smokeOnly
+  ? completeViewports.filter(([name]) => ['1440x900', 'mobile'].includes(name))
+  : completeViewports;
 
 const mimeTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -34,6 +73,7 @@ const mimeTypes = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
+  '.woff': 'font/woff',
   '.woff2': 'font/woff2',
 };
 
@@ -197,7 +237,7 @@ async function evaluateValue(client, expression) {
 
 async function navigate(client, route) {
   const loaded = client.waitFor('Page.loadEventFired');
-  await client.send('Page.navigate', { url: `http://127.0.0.1:${sitePort}${route}` });
+  await client.send('Page.navigate', { url: `${siteBaseUrl}${route}` });
   await loaded;
   await evaluateValue(client, 'document.fonts.ready.then(() => true)');
   await new Promise((resolve) => setTimeout(resolve, 180));
@@ -209,7 +249,7 @@ async function runInteractionAudit(client) {
     checks.push({ page: pageName, viewport, name, pass: Boolean(pass), details });
   };
 
-  for (const [pageName, route] of pages) {
+  for (const [pageName, route] of interactionPages) {
     await client.send('Emulation.setDeviceMetricsOverride', {
       width: 1366,
       height: 768,
@@ -232,7 +272,7 @@ async function runInteractionAudit(client) {
         invalidWhatsapp: whatsapp.filter((link) => !link.href.startsWith('https://wa.me/')).length,
       };
     })())`));
-    record(pageName, '1366x768', 'Sin scroll horizontal', desktop.overflow === 0, desktop);
+    record(pageName, '1366x768', 'Sin scroll horizontal', desktop.overflow <= 0, desktop);
     record(pageName, '1366x768', 'CTA del hero visible', desktop.actionsVisible, desktop);
     record(pageName, '1366x768', 'CTA con destino válido', desktop.emptyCtas === 0, desktop);
     record(pageName, '1366x768', 'Enlaces WhatsApp válidos', desktop.whatsappCount > 0 && desktop.invalidWhatsapp === 0, desktop);
@@ -279,17 +319,26 @@ async function runInteractionAudit(client) {
     })())`));
     record(pageName, 'mobile', 'Menú móvil cierra con Escape', closed.closed && closed.collapsed, closed);
 
+    await evaluateValue(client, 'scrollTo(0, 420); true');
+    await new Promise((resolve) => setTimeout(resolve, 320));
     const dock = JSON.parse(await evaluateValue(client, `JSON.stringify((() => {
       const element = document.querySelector('.conversion-dock');
       const box = element?.getBoundingClientRect();
       return {
         width: Math.round(box?.width || 0),
         height: Math.round(box?.height || 0),
-        insideViewport: Boolean(box && box.right <= innerWidth && box.bottom <= innerHeight && box.left >= 0),
+        top: Math.round(box?.top || 0),
+        right: Math.round(box?.right || 0),
+        bottom: Math.round(box?.bottom || 0),
+        left: Math.round(box?.left || 0),
+        viewportWidth: innerWidth,
+        viewportHeight: innerHeight,
+        insideViewport: Boolean(box && box.right <= innerWidth + 1 && box.bottom <= innerHeight + 1 && box.left >= -1),
+        visible: element?.classList.contains('is-suppressed') === false,
         shortLabel: element?.innerText.includes('Chat') === true,
       };
     })())`));
-    record(pageName, 'mobile', 'WhatsApp compacto y visible', dock.width <= 110 && dock.height <= 64 && dock.insideViewport && dock.shortLabel, dock);
+    record(pageName, 'mobile', 'WhatsApp compacto y visible', dock.width <= 110 && dock.height <= 64 && dock.insideViewport && dock.visible && dock.shortLabel, dock);
   }
 
   await client.send('Emulation.setDeviceMetricsOverride', {
@@ -312,7 +361,7 @@ async function runInteractionAudit(client) {
 
 async function main() {
   fs.mkdirSync(outputRoot, { recursive: true });
-  const server = await startServer();
+  const server = usesLocalServer ? await startServer() : null;
   const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'palacios-layout-'));
   const chrome = childProcess.spawn(findChrome(), [
     '--headless=new',
@@ -343,7 +392,7 @@ async function main() {
     });
     client.on('Network.responseReceived', (params) => {
       const { response } = params;
-      if (response.url.startsWith(`http://127.0.0.1:${sitePort}`) && response.status >= 400) {
+      if (response.url.startsWith(siteOrigin) && response.status >= 400) {
         browserIssues.push({ context: activeContext, type: 'resource', status: response.status, url: response.url });
       }
     });
@@ -362,7 +411,7 @@ async function main() {
           screenHeight: height,
         });
         const loaded = client.waitFor('Page.loadEventFired');
-        await client.send('Page.navigate', { url: `http://127.0.0.1:${sitePort}${route}` });
+        await client.send('Page.navigate', { url: `${siteBaseUrl}${route}` });
         await loaded;
         await client.send('Runtime.evaluate', {
           expression: 'document.fonts.ready',
@@ -377,14 +426,16 @@ async function main() {
         const result = await client.send('Runtime.evaluate', { expression: metricExpression, returnByValue: true });
         audit[pageName][viewportName] = JSON.parse(result.result.value);
 
-        const screenshot = await client.send('Page.captureScreenshot', {
-          format: 'png',
-          fromSurface: true,
-          captureBeyondViewport: false,
-        });
-        fs.writeFileSync(path.join(outputRoot, `${pageName}-${viewportName}.png`), screenshot.data, 'base64');
+        if (screenshotsEnabled) {
+          const screenshot = await client.send('Page.captureScreenshot', {
+            format: 'png',
+            fromSurface: true,
+            captureBeyondViewport: false,
+          });
+          fs.writeFileSync(path.join(outputRoot, `${pageName}-${viewportName}.png`), screenshot.data, 'base64');
+        }
 
-        if (viewportName === '1440x900') {
+        if (screenshotsEnabled && viewportName === '1440x900') {
           await client.send('Runtime.evaluate', {
             expression: `(async () => {
               const step = Math.max(500, Math.round(innerHeight * 0.8));
@@ -430,7 +481,7 @@ async function main() {
     }
   } finally {
     chrome.kill();
-    server.close();
+    server?.close();
     await new Promise((resolve) => chrome.once('exit', resolve));
     try {
       fs.rmSync(profile, { recursive: true, force: true });

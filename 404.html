@@ -7,33 +7,46 @@
   <title>Página no encontrada | Palacios Asesores &amp; Revisores</title>
   <meta name="description" content="La página solicitada no existe. Regrese al inicio o explore nuestras soluciones.">
   <meta name="robots" content="noindex, follow">
-  <link rel="canonical" href="https://grupopalaciosasesores.com/404.html">
+  <link rel="canonical" href="https://www.grupopalaciosasesores.com/404.html">
   <meta property="og:locale" content="es_CO">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Página no encontrada | Palacios Asesores &amp; Revisores">
   <meta property="og:description" content="La página solicitada no existe. Regrese al inicio o explore nuestras soluciones.">
-  <meta property="og:url" content="https://grupopalaciosasesores.com/404.html">
-  <meta property="og:image" content="https://grupopalaciosasesores.com/assets/img/logo.webp">
+  <meta property="og:url" content="https://www.grupopalaciosasesores.com/404.html">
+  <meta property="og:image" content="https://www.grupopalaciosasesores.com/assets/img/logo.webp">
   <meta property="og:site_name" content="Palacios Asesores &amp; Revisores">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Página no encontrada | Palacios Asesores &amp; Revisores">
   <meta name="twitter:description" content="La página solicitada no existe. Regrese al inicio o explore nuestras soluciones.">
-  <meta name="twitter:image" content="https://grupopalaciosasesores.com/assets/img/logo.webp">
+  <meta name="twitter:image" content="https://www.grupopalaciosasesores.com/assets/img/logo.webp">
   <meta name="theme-color" content="#111d39">
   <link rel="icon" href="assets/img/favicon.png">
   <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="assets/css/palacios-2026.css" rel="stylesheet">
+  <link rel="preload" href="assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link href="assets/css/palacios-icons.css" rel="stylesheet">
+  <link href="assets/css/palacios-2026.min.css" rel="stylesheet">
 
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7978WT0ESL"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    window.gtag = window.gtag || function(){dataLayer.push(arguments);};
     gtag('js', new Date());
     gtag('config', 'G-7978WT0ESL');
+    (function(){
+      var loaded = false;
+      function loadAnalytics(){
+        if (loaded) return;
+        loaded = true;
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-7978WT0ESL';
+        document.head.appendChild(script);
+      }
+      ['pointerdown', 'keydown'].forEach(function(eventName){
+        window.addEventListener(eventName, loadAnalytics, { once: true, passive: true });
+      });
+      window.addEventListener('load', function(){ setTimeout(loadAnalytics, 12000); }, { once: true });
+    })();
   </script>
 
 </head>
@@ -43,12 +56,12 @@
 <header class="site-header" data-header>
   <div class="container site-header__inner">
     <a class="brand" href="index.html" aria-label="Palacios Asesores &amp; Revisores, inicio">
-      <img src="assets/img/logo.webp" width="86" height="111" alt="">
+      <img src="assets/img/logo.webp" srcset="/assets/img/logo-64.webp 64w, /assets/img/logo-128.webp 128w" sizes="43px" width="86" height="111" alt="" decoding="async">
       <span class="brand__name"><strong>Palacios</strong><span>Asesores &amp; Revisores</span></span>
     </a>
-    <nav class="site-nav" data-nav aria-label="Navegación principal"><ul><li><a href="index.html#inicio" aria-current="page">Inicio</a></li><li><a href="index.html#firma">Nosotros</a></li><li><a href="index.html#soluciones">Servicios</a></li><li><a href="auditoria/index.html">Auditoría</a></li><li><a href="propiedad-horizontal/index.html">Propiedad Horizontal</a></li><li><a href="innovacion/index.html">Innovación</a></li><li><a href="blog/blog.html">Blog</a></li><li><a href="index.html#contacto">Contacto</a></li></ul></nav>
+    <nav class="site-nav" id="site-navigation" data-nav aria-label="Navegación principal"><ul><li><a href="index.html#inicio" aria-current="page">Inicio</a></li><li><a href="index.html#firma">Nosotros</a></li><li><a href="index.html#soluciones">Servicios</a></li><li><a href="auditoria/index.html">Auditoría</a></li><li><a href="propiedad-horizontal/index.html">Propiedad Horizontal</a></li><li><a href="innovacion/index.html">Innovación</a></li><li><a href="blog/blog.html">Blog</a></li><li><a href="index.html#contacto">Contacto</a></li></ul></nav>
     <a class="button button--gold header-cta" href="https://wa.me/573151816494?text=Hola%2C%20quiero%20solicitar%20una%20asesor%C3%ADa%20con%20Palacios%20Asesores%20%26%20Revisores." target="_blank" rel="noopener" data-event="whatsapp_click" data-service="general">Solicitar asesoría</a>
-    <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-expanded="false" data-nav-toggle><i class="bi bi-list" aria-hidden="true"></i></button>
+    <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-controls="site-navigation" aria-expanded="false" data-nav-toggle><i class="bi bi-list" aria-hidden="true"></i></button>
   </div>
 </header>
 <main id="contenido" class="error-page">
@@ -62,6 +75,18 @@
     </div>
   </div>
 </main>
-<script src="assets/js/palacios-2026.js" defer></script>
+<script>
+  (function(){
+    function loadRuntime(){
+      window.setTimeout(function(){
+        var script = document.createElement('script');
+        script.src = '/assets/js/palacios-2026.min.js';
+        document.body.appendChild(script);
+      }, 30);
+    }
+    if (document.readyState === 'complete') loadRuntime();
+    else window.addEventListener('load', loadRuntime, { once: true });
+  })();
+</script>
 </body>
 </html>

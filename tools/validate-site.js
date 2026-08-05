@@ -43,6 +43,27 @@ for (const filePath of htmlFiles) {
   const h1Count = (html.match(/<h1\b/gi) || []).length;
   if (!redirect && h1Count !== 1) errors.push(`${relative}: contiene ${h1Count} H1.`);
 
+  if (!/^<!doctype html>/i.test(html.trimStart())) errors.push(`${relative}: falta DOCTYPE HTML.`);
+  if (!/<html\s+lang=["']es-CO["']/i.test(html)) errors.push(`${relative}: el idioma debe declararse como es-CO.`);
+  if (!/<meta\s+name=["']viewport["']/i.test(html)) errors.push(`${relative}: falta viewport responsive.`);
+  if (!/<title>[^<]{10,}<\/title>/i.test(html)) errors.push(`${relative}: título ausente o demasiado corto.`);
+  if (!redirect && !/<meta\s+name=["']description["']\s+content=["'][^"']{50,}["']/i.test(html)) {
+    errors.push(`${relative}: meta description ausente o demasiado corta.`);
+  }
+  if (!/<link\s+rel=["']canonical["']\s+href=["']https:\/\/www\.grupopalaciosasesores\.com/i.test(html)) {
+    errors.push(`${relative}: canonical no coincide con el host público www.`);
+  }
+
+  if (!redirect) {
+    if (!/<main\b/i.test(html)) errors.push(`${relative}: falta landmark main.`);
+    if (!/class=["'][^"']*skip-link/i.test(html)) errors.push(`${relative}: falta enlace para saltar al contenido.`);
+    if (!/palacios-2026(?:\.min)?\.css/i.test(html)) errors.push(`${relative}: no utiliza el sistema visual actual.`);
+    if (!/palacios-2026(?:\.min)?\.js/i.test(html)) errors.push(`${relative}: no utiliza las interacciones actuales.`);
+    if (/bootstrap(?:-icons)?(?:\.min)?\.css|main\.css|aos\.css|font-awesome/i.test(html)) {
+      errors.push(`${relative}: conserva dependencias visuales obsoletas.`);
+    }
+  }
+
   const ids = [...html.matchAll(/\bid=["']([^"']+)["']/gi)].map((match) => match[1]);
   const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
   if (duplicateIds.length) errors.push(`${relative}: IDs duplicados: ${[...new Set(duplicateIds)].join(', ')}.`);
@@ -61,6 +82,18 @@ for (const filePath of htmlFiles) {
 
   for (const match of html.matchAll(/<img\b([^>]*)>/gi)) {
     if (!/\balt=["'][^"']*["']/i.test(match[1])) errors.push(`${relative}: imagen sin atributo alt.`);
+    if (!redirect && (!/\bwidth=["']\d+["']/i.test(match[1]) || !/\bheight=["']\d+["']/i.test(match[1]))) {
+      errors.push(`${relative}: imagen sin dimensiones explícitas.`);
+    }
+  }
+
+  for (const match of html.matchAll(/<a\b([^>]*)target=["']_blank["']([^>]*)>/gi)) {
+    const attributes = `${match[1]} ${match[2]}`;
+    if (!/\brel=["'][^"']*noopener/i.test(attributes)) errors.push(`${relative}: enlace externo sin rel=noopener.`);
+  }
+
+  for (const match of html.matchAll(/<button\b([^>]*)>/gi)) {
+    if (!/\btype=["'](?:button|submit|reset)["']/i.test(match[1])) errors.push(`${relative}: botón sin tipo explícito.`);
   }
 
   for (const match of html.matchAll(/<script\s+type=["']application\/ld\+json["']>([\s\S]*?)<\/script>/gi)) {
