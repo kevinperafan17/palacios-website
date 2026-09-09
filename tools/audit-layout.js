@@ -25,6 +25,7 @@ const representativePages = [
   ['auditoria', '/auditoria/'],
   ['propiedad-horizontal', '/propiedad-horizontal/'],
   ['innovacion', '/innovacion/'],
+  ['domo', '/domo/'],
   ['analitica-datos', '/analitica-datos/'],
   ['blog', '/blog/blog.html'],
   ['articulo', '/blog/blog-details-auditoria.html'],
@@ -33,7 +34,7 @@ const representativePages = [
 
 function discoverPages(directory = root) {
   return fs.readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
-    if (entry.name.startsWith('.') || entry.name === 'tools') return [];
+    if (entry.name.startsWith('.') || ['tools', 'tmp', 'Logos'].includes(entry.name)) return [];
     const fullPath = path.join(directory, entry.name);
     if (entry.isDirectory()) return discoverPages(fullPath);
     if (!entry.name.endsWith('.html')) return [];

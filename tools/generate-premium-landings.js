@@ -334,12 +334,14 @@ ${shared.head({
     image,
     schema: [shared.organizationSchema, serviceSchema(service)],
   })}
-<body>
+<body data-page="${service.slug}">
 ${shared.header('services')}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido">
-  <section class="hero inner-hero capability-hero" data-spotlight>
+  <section class="hero inner-hero capability-hero hero--${service.slug}" data-spotlight>
+    <div class="hero__aurora" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="container hero__grid">
-      <div class="reveal is-visible">
+      <div class="hero__copy reveal is-visible">
         <nav aria-label="Migas de pan"><ol class="breadcrumb"><li><a href="/">Inicio</a></li><li aria-current="page">${esc(service.title)}</li></ol></nav>
         <span class="eyebrow">${esc(service.accent)}</span>
         <h1>${esc(service.h1)}</h1>
@@ -350,8 +352,9 @@ ${shared.header('services')}
         </div>
         <ul class="trust-strip">${service.metrics.map((metric) => `<li>${shared.icon('check2-circle')} ${esc(metric)}</li>`).join('')}</ul>
       </div>
-      <div class="service-visual reveal is-visible">
+      <div class="service-visual reveal is-visible" data-tilt-surface>
         <img src="${image}"${shared.responsiveCardImageAttributes(image, '(max-width: 900px) calc(100vw - 32px), 46vw')} width="1280" height="732" alt="${esc(service.title)} con enfoque profesional" fetchpriority="high" decoding="async">
+        <span class="service-visual__signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <div class="service-visual__caption"><strong>${esc(service.title)}</strong><span>Capacidad especializada</span></div>
       </div>
     </div>

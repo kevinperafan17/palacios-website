@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const ignoredDirectories = new Set(['.git', 'tools']);
+const ignoredDirectories = new Set(['.git', 'tools', 'tmp']);
 const errors = [];
 const warnings = [];
 
@@ -38,6 +38,8 @@ const htmlFiles = files.filter((filePath) => filePath.endsWith('.html'));
 
 for (const filePath of htmlFiles) {
   const relative = path.relative(root, filePath);
+  const normalizedRelative = relative.replaceAll('\\', '/');
+  const isDomo = normalizedRelative === 'domo/index.html';
   const html = fs.readFileSync(filePath, 'utf8');
   const redirect = /http-equiv=["']refresh["']/i.test(html);
   const h1Count = (html.match(/<h1\b/gi) || []).length;
@@ -57,8 +59,10 @@ for (const filePath of htmlFiles) {
   if (!redirect) {
     if (!/<main\b/i.test(html)) errors.push(`${relative}: falta landmark main.`);
     if (!/class=["'][^"']*skip-link/i.test(html)) errors.push(`${relative}: falta enlace para saltar al contenido.`);
-    if (!/palacios-2026(?:\.min)?\.css/i.test(html)) errors.push(`${relative}: no utiliza el sistema visual actual.`);
-    if (!/palacios-2026(?:\.min)?\.js/i.test(html)) errors.push(`${relative}: no utiliza las interacciones actuales.`);
+    if (!/palacios-2026(?:\.min)?\.css/i.test(html)) errors.push(`${relative}: no utiliza el sistema visual compartido.`);
+    if (!/palacios-2026(?:\.min)?\.js/i.test(html)) errors.push(`${relative}: no utiliza las interacciones compartidas.`);
+    if (isDomo && !/domo\.min\.css/i.test(html)) errors.push(`${relative}: faltan los componentes visuales específicos de DOMO.`);
+    if (isDomo && !/domo\.min\.js/i.test(html)) errors.push(`${relative}: faltan las interacciones específicas de DOMO.`);
     if (/bootstrap(?:-icons)?(?:\.min)?\.css|main\.css|aos\.css|font-awesome/i.test(html)) {
       errors.push(`${relative}: conserva dependencias visuales obsoletas.`);
     }
@@ -130,6 +134,11 @@ for (const relative of requiredPages) {
   if (!html.includes('rel="canonical"')) errors.push(`${relative}: falta canonical.`);
   if (!html.includes('property="og:title"')) errors.push(`${relative}: falta Open Graph.`);
 }
+
+const domoHtml = fs.readFileSync(path.join(root, 'domo/index.html'), 'utf8');
+if (!domoHtml.includes('data-event="whatsapp_click"')) errors.push('domo/index.html: falta seguimiento de WhatsApp.');
+if (!domoHtml.includes('"@type":"FAQPage"')) errors.push('domo/index.html: falta FAQ Schema.');
+if (!domoHtml.includes('"SoftwareApplication"')) errors.push('domo/index.html: falta SoftwareApplication Schema.');
 
 const report = {
   htmlFiles: htmlFiles.length,

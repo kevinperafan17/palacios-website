@@ -113,7 +113,7 @@ function head({ title, description, canonical, image = '/assets/img/logo.webp', 
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="/assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/manrope-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/dm-serif-display-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
   <link href="/assets/css/palacios-icons.css" rel="stylesheet">
   <link href="/assets/css/palacios-2026.min.css" rel="stylesheet">
 ${analytics()}
@@ -123,14 +123,13 @@ ${schemas}
 
 function header(active = 'home', solid = false) {
   const links = [
-    ['home', '/#inicio', 'Inicio'],
     ['about', '/#firma', 'Nosotros'],
     ['services', '/#soluciones', 'Servicios'],
     ['audit', '/auditoria/', 'Auditoría'],
     ['ph', '/propiedad-horizontal/', 'Propiedad Horizontal'],
     ['innovation', '/innovacion/', 'Innovación'],
-    ['blog', '/blog/blog.html', 'Blog'],
-    ['contact', '/#contacto', 'Contacto'],
+    ['domo', '/domo/', 'DOMO'],
+    ['blog', '/blog/blog.html', 'Ideas'],
   ];
   const nav = links.map(([key, href, label]) =>
     `<li><a href="${href}"${active === key ? ' aria-current="page"' : ''}>${label}</a></li>`
@@ -144,7 +143,7 @@ function header(active = 'home', solid = false) {
       <span class="brand__name"><strong>Palacios</strong><span>Asesores &amp; Revisores</span></span>
     </a>
     <nav class="site-nav" id="site-navigation" data-nav aria-label="Navegación principal"><ul>${nav}</ul></nav>
-    <a class="button button--gold header-cta" href="${whatsapp('Hola, quiero solicitar una asesoría con Palacios Asesores & Revisores.')}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="general">Solicitar asesoría</a>
+    <a class="button button--gold header-cta" href="${whatsapp('Hola, quiero solicitar una asesoría con Palacios Asesores & Revisores.')}" target="_blank" rel="noopener" data-event="whatsapp_click" data-service="general">Hablemos ${icon('arrow-right')}</a>
     <button class="nav-toggle" type="button" aria-label="Abrir menú" aria-controls="site-navigation" aria-expanded="false" data-nav-toggle><i class="bi bi-list" aria-hidden="true"></i></button>
   </div>
 </header>`;
@@ -168,6 +167,7 @@ function footer() {
           <li><a href="/auditoria/">Auditoría</a></li>
           <li><a href="/propiedad-horizontal/">Propiedad Horizontal</a></li>
           <li><a href="/innovacion/">Innovación y Tecnología</a></li>
+          <li><a href="/domo/">DOMO</a></li>
           <li><a href="/#capacidades">Otras capacidades</a></li>
         </ul>
       </div>
@@ -555,6 +555,19 @@ function cards(items, className) {
 </article>`).join('');
 }
 
+function domoProductBanner() {
+  return `
+<section class="section product-callout-section">
+  <div class="container">
+    <a class="product-callout reveal" href="/domo/" data-event="product_landing_click" data-service="domo">
+      <span class="product-callout__brand"><img src="/domo/domo-logo-240.webp" width="240" height="158" alt="DOMO" loading="lazy" decoding="async"></span>
+      <span class="product-callout__copy"><small>Producto de Innovación y Tecnología</small><strong>Conozca DOMO</strong><span>Una plataforma modular diseñada alrededor de la operación de cada organización.</span></span>
+      <span class="product-callout__action">Explorar la plataforma ${icon('arrow-right')}</span>
+    </a>
+  </div>
+</section>`;
+}
+
 function buildLanding(service) {
   const waMessage = `Hola, quiero solicitar una asesoría sobre ${service.navName}.`;
   const solutionCards = service.solutions.map(([title, text, includes], index) => `
@@ -590,12 +603,14 @@ ${head({
     image: service.image,
     schema: [organizationSchema, serviceSchema(service)],
   })}
-<body>
+<body data-page="${service.slug}">
 ${header(service.active)}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido">
-  <section class="hero inner-hero" data-spotlight>
+  <section class="hero inner-hero hero--${service.slug}" data-spotlight>
+    <div class="hero__aurora" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="container hero__grid">
-      <div class="reveal is-visible">
+      <div class="hero__copy reveal is-visible">
         <nav aria-label="Migas de pan"><ol class="breadcrumb"><li><a href="/">Inicio</a></li><li aria-current="page">${service.name}</li></ol></nav>
         <span class="eyebrow">${service.heroTag}</span>
         <h1>${service.heroTitle}</h1>
@@ -610,8 +625,9 @@ ${header(service.active)}
           <li>${icon('check2-circle')} Información confidencial</li>
         </ul>
       </div>
-      <div class="service-visual reveal is-visible">
+      <div class="service-visual reveal is-visible" data-tilt-surface>
         <img src="${service.image}"${responsiveCardImageAttributes(service.image, '(max-width: 900px) calc(100vw - 32px), 46vw')} width="1280" height="732" alt="${service.navName} con enfoque profesional y tecnológico" fetchpriority="high" decoding="async">
+        <span class="service-visual__signal" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
         <div class="service-visual__caption"><strong>${service.navName}</strong><span>Solución especializada</span></div>
       </div>
     </div>
@@ -672,6 +688,8 @@ ${header(service.active)}
 
   ${useCases}
 
+  ${service.slug === 'innovacion' ? domoProductBanner() : ''}
+
   <section class="section section--light" data-service="${service.slug}">
     <div class="container faq-layout">
       <div class="faq-layout__intro">
@@ -693,7 +711,7 @@ ${dock(service.slug, waMessage)}
 
 function buildHome() {
   const serviceFeatures = services.map((service, index) => `
-<article class="service-feature">
+<article class="service-feature service-feature--${service.slug}">
   <div class="service-feature__copy reveal">
     <span class="service-feature__index">0${index + 1} · Línea prioritaria</span>
     <h3>${service.name}</h3>
@@ -701,7 +719,7 @@ function buildHome() {
     <p class="service-feature__problem">${service.introTitle}</p>
     <a class="text-link" href="/${service.slug}/" data-event="service_landing_click" data-service="${service.slug}">Explorar esta solución ${icon('arrow-right')}</a>
   </div>
-  <a class="service-feature__visual reveal" href="/${service.slug}/" aria-label="Conocer ${service.navName}">
+  <a class="service-feature__visual reveal" href="/${service.slug}/" aria-label="Conocer ${service.navName}" data-tilt-surface>
     <img src="${service.image}"${responsiveCardImageAttributes(service.image, '(max-width: 900px) calc(100vw - 32px), 48vw')} width="1280" height="732" alt="" loading="lazy" decoding="async">
     <span class="service-feature__tag">${icon(index === 0 ? 'shield-check' : index === 1 ? 'buildings' : 'cpu')} ${service.heroTag}</span>
   </a>
@@ -731,15 +749,17 @@ ${head({
     image: '/assets/img/services/innovacion-hero.webp',
     schema: [organizationSchema],
   })}
-<body>
+<body data-page="home">
 ${header('home')}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido">
   <section class="hero" id="inicio" data-spotlight>
+    <div class="hero__aurora" aria-hidden="true"><span></span><span></span><span></span></div>
     <div class="container hero__grid">
-      <div class="reveal is-visible">
-        <span class="eyebrow">Auditoría · Gestión · Tecnología</span>
-        <h1>Transformamos riesgos, procesos y datos en <em>decisiones inteligentes.</em></h1>
-        <p class="hero__lead">Auditoría, propiedad horizontal, automatización y analítica para organizaciones que buscan crecer con control, eficiencia y confianza.</p>
+      <div class="hero__copy reveal is-visible">
+        <span class="eyebrow">Auditoría · Gestión · Inteligencia digital</span>
+        <h1>Controlamos la complejidad. <em>Aceleramos el futuro.</em></h1>
+        <p class="hero__lead">Integramos auditoría, propiedad horizontal, automatización e inteligencia de datos para convertir operaciones complejas en decisiones claras, trazables y más rápidas.</p>
         <div class="hero__actions">
           <a class="button button--gold" href="#contacto" data-event="cta_primary" data-service="home">${icon('arrow-right')} Solicitar asesoría</a>
           <a class="button button--ghost" href="#soluciones" data-event="services_intent" data-service="home">Conocer nuestros servicios</a>
@@ -750,23 +770,30 @@ ${header('home')}
           <li>${icon('check2-circle')} Tecnología aplicada</li>
         </ul>
       </div>
-      <div class="decision-canvas reveal is-visible" role="img" aria-label="Representación conceptual del flujo de trabajo de Palacios">
-        <div class="decision-canvas__top"><span>Sistema de decisión</span><span class="status-dot">Enfoque integral</span></div>
+      <div class="decision-canvas reveal is-visible" role="img" aria-label="Representación conceptual del flujo de trabajo de Palacios" data-tilt-surface>
+        <div class="decision-canvas__top"><span>Palacios Intelligence System</span><span class="status-dot">Sistema activo</span></div>
         <div class="decision-flow">
-          <div class="flow-node"><span class="flow-node__icon">${icon('radar')}</span><span><strong>Riesgo visible</strong><small>Diagnóstico y priorización</small></span><span class="flow-node__state">Evaluar</span></div>
-          <div class="flow-node"><span class="flow-node__icon">${icon('shield-check')}</span><span><strong>Control trazable</strong><small>Evidencia y responsables</small></span><span class="flow-node__state">Proteger</span></div>
-          <div class="flow-node"><span class="flow-node__icon">${icon('diagram-3')}</span><span><strong>Proceso conectado</strong><small>Gestión y automatización</small></span><span class="flow-node__state">Optimizar</span></div>
-          <div class="flow-node"><span class="flow-node__icon">${icon('bar-chart-line')}</span><span><strong>Decisión informada</strong><small>Datos e indicadores útiles</small></span><span class="flow-node__state">Decidir</span></div>
+          <div class="flow-node" data-signal="risk"><span class="flow-node__icon">${icon('radar')}</span><span><strong>Riesgo visible</strong><small>Diagnóstico y priorización</small></span><span class="flow-node__state">Evaluar</span></div>
+          <div class="flow-node" data-signal="control"><span class="flow-node__icon">${icon('shield-check')}</span><span><strong>Control trazable</strong><small>Evidencia y responsables</small></span><span class="flow-node__state">Proteger</span></div>
+          <div class="flow-node" data-signal="process"><span class="flow-node__icon">${icon('diagram-3')}</span><span><strong>Proceso conectado</strong><small>Gestión y automatización</small></span><span class="flow-node__state">Optimizar</span></div>
+          <div class="flow-node" data-signal="decision"><span class="flow-node__icon">${icon('bar-chart-line')}</span><span><strong>Decisión informada</strong><small>Datos e indicadores útiles</small></span><span class="flow-node__state">Decidir</span></div>
         </div>
-        <div class="canvas-note">${icon('info-circle')} Visual conceptual: representa nuestra forma de integrar auditoría, gestión y tecnología; no es un producto de software.</div>
+        <div class="decision-canvas__telemetry" aria-hidden="true"><span><i></i>Diagnóstico</span><span><i></i>Evidencia</span><span><i></i>Acción</span><b><i></i><i></i><i></i><i></i><i></i><i></i><i></i></b></div>
+        <div class="canvas-note">${icon('info-circle')} Un sistema de trabajo que conecta criterio profesional, gestión y tecnología.</div>
       </div>
     </div>
   </section>
 
+  <div class="signal-rail" aria-label="Capacidades de Palacios">
+    <div class="signal-rail__track">
+      ${['Auditoría estratégica', 'Control en tiempo real', 'Propiedad horizontal', 'Automatización', 'Inteligencia artificial', 'Analítica de datos', 'Cumplimiento', 'DOMO'].concat(['Auditoría estratégica', 'Control en tiempo real', 'Propiedad horizontal', 'Automatización', 'Inteligencia artificial', 'Analítica de datos', 'Cumplimiento', 'DOMO']).map((label) => `<span>${label}<i aria-hidden="true"></i></span>`).join('')}
+    </div>
+  </div>
+
   <section class="section" id="firma">
     <div class="container">
       <div class="section-heading">
-        <div><span class="eyebrow">Una sola firma</span><h2>Control profesional con mentalidad de innovación.</h2></div>
+        <div><span class="eyebrow">Una sola firma</span><h2>Rigor profesional. Mentalidad de producto.</h2></div>
         <p>Palacios Asesores &amp; Revisores se involucra como aliado estratégico para comprender la necesidad, organizar la respuesta y acompañar su implementación.</p>
       </div>
       <div class="positioning-grid">
@@ -857,6 +884,27 @@ ${header('home')}
     </div>
   </section>
 
+  <section class="section client-logos" id="experiencia">
+    <div class="container">
+      <div class="section-heading section-heading--compact">
+        <div><span class="eyebrow">Experiencia compartida</span><h2>Organizaciones con las que hemos trabajado.</h2></div>
+        <p>La relación y el alcance han variado según las necesidades de cada organización.</p>
+      </div>
+      <div class="client-logo-grid" aria-label="Organizaciones con las que Palacios ha trabajado">
+        ${[
+          ['bosques-verdehorizonte.webp', 'Bosques de Verdehorizonte'],
+          ['oskr-barber.webp', 'OSKR Barber'],
+          ['el-rustico.webp', 'El Rústico Parrilla-Bar'],
+          ['hospital-santa-margarita.webp', 'Hospital Santa Margarita La Cumbre'],
+          ['luis-enrique-roldan-cs.webp', 'Luis Enrique Roldán CS'],
+          ['proyectos-ingenieria-colombiana.webp', 'Proyectos de Ingeniería Colombiana S.A.S.'],
+          ['yilop-colombia.webp', 'Yilop de Colombia'],
+          ['monos.webp', 'Monos'],
+        ].map(([file, name], index) => `<div class="client-logo-card reveal" data-delay="${index % 4}"><img src="/assets/img/clientes/${file}" width="600" height="300" alt="${name}" loading="lazy" decoding="async"></div>`).join('')}
+      </div>
+    </div>
+  </section>
+
   <section class="section section--light" id="capacidades">
     <div class="container innovation-stage">
       <div class="reveal">
@@ -870,6 +918,11 @@ ${header('home')}
           <a href="/sagrilaft/">SAGRILAFT</a>
           <a href="/servicios-complementarios/">Servicios complementarios</a>
         </div>
+        <a class="domo-entry" href="/domo/" data-event="product_landing_click" data-service="domo">
+          <img src="/domo/domo-logo-240.webp" width="240" height="158" alt="DOMO" loading="lazy" decoding="async">
+          <span><small>Producto de Palacios</small><strong>Conocer DOMO</strong><span>Plataforma modular para proyectos, datos, tareas y procesos a medida.</span></span>
+          ${icon('arrow-right')}
+        </a>
       </div>
       <div class="tech-map reveal">
         <div class="tech-map__bar"><span>Arquitectura conceptual</span><span>Proceso → decisión</span></div>
@@ -944,8 +997,9 @@ ${head({
     canonical: '/blog/blog.html',
     image: '/assets/img/blog/blog-hero-2.webp',
   })}
-<body>
+<body data-page="blog">
 ${header('blog', true)}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido">
   <section class="page-hero">
     <div class="container">
@@ -1079,8 +1133,9 @@ ${head({
     type: 'article',
     schema: [organizationSchema, articleSchema],
   })}
-<body>
+<body data-page="article">
 ${header('blog', true)}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido">
   <section class="page-hero article-hero">
     <div class="container">
@@ -1138,8 +1193,9 @@ ${head({
     description: 'La página solicitada no existe. Regrese al inicio o explore nuestras soluciones.',
     canonical: '/404.html',
   }).replace('<meta name="robots" content="index, follow, max-image-preview:large">', '<meta name="robots" content="noindex, follow">')}
-<body>
+<body data-page="404">
 ${header('home')}
+<div class="page-progress" aria-hidden="true"><span data-scroll-progress></span></div>
 <main id="contenido" class="error-page">
   <div class="container">
     <div class="error-page__code" aria-hidden="true">404</div>
@@ -1190,6 +1246,7 @@ function buildSitemap() {
     ['/auditoria/', '0.9'],
     ['/propiedad-horizontal/', '0.9'],
     ['/innovacion/', '0.9'],
+    ['/domo/', '0.9'],
     ['/analitica-datos/', '0.7'],
     ['/avaluos/', '0.7'],
     ['/gestion-documental/', '0.7'],
@@ -1200,7 +1257,7 @@ function buildSitemap() {
   ];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(([url, priority]) => `  <url><loc>${domain}${url}</loc><lastmod>2026-08-05</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`).join('\n')}
+${urls.map(([url, priority]) => `  <url><loc>${domain}${url}</loc><lastmod>2026-09-09</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`).join('\n')}
 </urlset>`;
 }
 

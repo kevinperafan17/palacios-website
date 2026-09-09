@@ -8,7 +8,15 @@
   const nav = document.querySelector("[data-nav]");
   const navToggle = document.querySelector("[data-nav-toggle]");
   const conversionDock = document.querySelector(".conversion-dock");
+  const progressBar = document.querySelector("[data-scroll-progress]");
   let headerFrame = null;
+
+  function updatePageProgress() {
+    if (!progressBar) return;
+    const distance = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = distance > 0 ? Math.min(1, Math.max(0, window.scrollY / distance)) : 0;
+    progressBar.style.transform = `scaleX(${progress})`;
+  }
 
   function updateHeader() {
     if (!header || header.classList.contains("site-header--solid")) return;
@@ -20,6 +28,7 @@
     headerFrame = window.requestAnimationFrame(function () {
       updateHeader();
       updateConversionDock();
+      updatePageProgress();
       headerFrame = null;
     });
   }
@@ -95,6 +104,7 @@
 
   updateHeader();
   updateConversionDock();
+  updatePageProgress();
   document.addEventListener("scroll", scheduleHeaderUpdate, { passive: true });
   window.addEventListener("resize", updateConversionDock, { passive: true });
 
@@ -123,6 +133,26 @@
       },
       { passive: true }
     );
+  });
+
+  document.querySelectorAll("[data-tilt-surface]").forEach(function (surface) {
+    if (reduceMotion || lowEndDevice || !window.matchMedia("(pointer: fine)").matches) return;
+    let frame = null;
+    surface.addEventListener("pointermove", function (event) {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(function () {
+        const bounds = surface.getBoundingClientRect();
+        const x = (event.clientX - bounds.left) / bounds.width - 0.5;
+        const y = (event.clientY - bounds.top) / bounds.height - 0.5;
+        surface.style.setProperty("--tilt-y", `${(x * 2.4).toFixed(2)}deg`);
+        surface.style.setProperty("--tilt-x", `${(-y * 2).toFixed(2)}deg`);
+        frame = null;
+      });
+    }, { passive: true });
+    surface.addEventListener("pointerleave", function () {
+      surface.style.setProperty("--tilt-x", "0deg");
+      surface.style.setProperty("--tilt-y", "0deg");
+    }, { passive: true });
   });
 
   function trackEvent(name, params) {
