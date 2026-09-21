@@ -88,8 +88,12 @@ function analytics() {
   </script>`;
 }
 
-function head({ title, description, canonical, image = '/assets/img/logo.webp', type = 'website', schema = [] }) {
+function head({ title, description, canonical, image = '/assets/img/logo.webp', motion = false, preloadImage = '', type = 'website', schema = [] }) {
   const schemas = schema.map((item) => `  <script type="application/ld+json">${JSON.stringify(item)}</script>`).join('\n');
+  const imagePreload = preloadImage.endsWith('.webp')
+    ? `\n  <link rel="preload" as="image" href="${preloadImage}" imagesrcset="${preloadImage.slice(0, -5)}-card-640.webp 640w, ${preloadImage.slice(0, -5)}-card-1024.webp 1024w" imagesizes="(max-width: 900px) calc(100vw - 32px), 46vw" type="image/webp" fetchpriority="high">`
+    : '';
+  const stylesheet = motion ? '/assets/css/palacios-experience.min.css' : '/assets/css/palacios-2026.min.css';
   return `
 <head>
   <meta charset="utf-8">
@@ -113,9 +117,9 @@ function head({ title, description, canonical, image = '/assets/img/logo.webp', 
   <link rel="icon" href="/assets/img/favicon.png">
   <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
   <link rel="preload" href="/assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/assets/fonts/dm-serif-display-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/assets/fonts/dm-serif-display-italic-latin.woff2" as="font" type="font/woff2" crossorigin>${imagePreload}
   <link href="/assets/css/palacios-icons.css" rel="stylesheet">
-  <link href="/assets/css/palacios-2026.min.css" rel="stylesheet">
+  <link href="${stylesheet}" rel="stylesheet">
 ${analytics()}
 ${schemas}
 </head>`;
@@ -149,7 +153,8 @@ function header(active = 'home', solid = false) {
 </header>`;
 }
 
-function footer() {
+function footer(motion = false) {
+  const runtime = motion ? '/assets/js/palacios-experience.min.js' : '/assets/js/palacios-2026.min.js';
   return `
 <footer class="site-footer">
   <div class="container">
@@ -205,7 +210,7 @@ function footer() {
     function loadRuntime(){
       window.setTimeout(function(){
         var script = document.createElement('script');
-        script.src = '/assets/js/palacios-2026.min.js';
+        script.src = '${runtime}';
         document.body.appendChild(script);
       }, 30);
     }
@@ -568,6 +573,296 @@ function domoProductBanner() {
 </section>`;
 }
 
+function auditRiskExperience() {
+  const risks = [
+    {
+      code: 'R1',
+      category: 'Financiero',
+      title: 'Información financiera inconsistente',
+      probability: 'Media',
+      impact: 'Alto',
+      risk: 'Cifras sin conciliación o soporte suficiente.',
+      control: 'Conciliaciones, revisión y responsables definidos.',
+      evidence: 'Soportes, trazas de revisión y cierre de diferencias.',
+      result: 'Mayor confiabilidad para informar y decidir.',
+      responsible: 'Finanzas + control',
+      inherent: 0.86,
+      residual: 0.36,
+      x: 74,
+      y: 80,
+    },
+    {
+      code: 'R2',
+      category: 'Operativo',
+      title: 'Operación sin trazabilidad',
+      probability: 'Alta',
+      impact: 'Medio',
+      risk: 'Cambios y aprobaciones sin un rastro verificable.',
+      control: 'Flujo definido con responsables y puntos de validación.',
+      evidence: 'Registro de estados, aprobaciones y excepciones.',
+      result: 'Procesos explicables y asuntos pendientes visibles.',
+      responsible: 'Operaciones',
+      inherent: 0.74,
+      residual: 0.29,
+      x: 61,
+      y: 58,
+    },
+    {
+      code: 'R3',
+      category: 'Cumplimiento',
+      title: 'Cumplimiento reactivo',
+      probability: 'Media',
+      impact: 'Alto',
+      risk: 'Obligaciones atendidas solo cuando aparece una urgencia.',
+      control: 'Calendario, criterios de revisión y alertas preventivas.',
+      evidence: 'Lista de verificación, soportes y seguimiento documentado.',
+      result: 'Menor exposición a omisiones y reprocesos.',
+      responsible: 'Cumplimiento + dirección',
+      inherent: 0.82,
+      residual: 0.31,
+      x: 47,
+      y: 72,
+    },
+    {
+      code: 'R4',
+      category: 'Tecnología',
+      title: 'Accesos tecnológicos débiles',
+      probability: 'Media',
+      impact: 'Medio',
+      risk: 'Permisos o cambios sin revisión suficiente.',
+      control: 'Perfiles, autorizaciones y revisión periódica de accesos.',
+      evidence: 'Matriz de acceso, aprobaciones y bitácoras disponibles.',
+      result: 'Mayor control sobre información y cambios críticos.',
+      responsible: 'Tecnología + líderes de proceso',
+      inherent: 0.62,
+      residual: 0.24,
+      x: 34,
+      y: 43,
+    },
+    {
+      code: 'R5',
+      category: 'Seguimiento',
+      title: 'Hallazgos sin cierre',
+      probability: 'Alta',
+      impact: 'Medio',
+      risk: 'Acciones de mejora sin fecha, evidencia o responsable visible.',
+      control: 'Plan priorizado con compromisos y revisión periódica.',
+      evidence: 'Soportes de avance, validación y cierre del hallazgo.',
+      result: 'Mejor continuidad sobre las acciones acordadas.',
+      responsible: 'Dueños de proceso',
+      inherent: 0.67,
+      residual: 0.27,
+      x: 69,
+      y: 31,
+    },
+  ];
+  const first = risks[0];
+  const points = risks.map((risk, index) => `
+    <button class="risk-point${index === 0 ? ' is-active' : ''}" type="button"
+      style="--risk-x:${risk.x}%;--risk-y:${risk.y}%"
+      data-risk-code="${risk.code}"
+      data-risk-category="${risk.category}"
+      data-risk-title="${risk.title}"
+      data-risk-probability="${risk.probability}"
+      data-risk-impact="${risk.impact}"
+      data-risk-risk="${risk.risk}"
+      data-risk-control="${risk.control}"
+      data-risk-evidence="${risk.evidence}"
+      data-risk-result="${risk.result}"
+      data-risk-responsible="${risk.responsible}"
+      data-risk-inherent="${risk.inherent}"
+      data-risk-residual="${risk.residual}"
+      aria-label="Explorar ${risk.code}: ${risk.category}"
+      aria-pressed="${index === 0 ? 'true' : 'false'}"><span>${risk.code}</span><small>${risk.category}</small></button>`).join('');
+
+  return `
+  <section class="section section--motion motion-experience motion-experience--audit" id="matriz-riesgos">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">Riesgo → control → evidencia</span><h2>Explore cómo un riesgo se convierte en una acción trazable.</h2></div>
+        <p>Seleccione un punto de la matriz para recorrer una demostración conceptual. No representa información, resultados ni métricas de un cliente.</p>
+      </div>
+      <div class="experience-shell risk-lab reveal" data-risk-lab data-chart>
+        <div class="risk-matrix">
+          <div class="experience-toolbar">
+            <span class="concept-label">Demostración conceptual</span>
+            <span class="experience-status"><i aria-hidden="true"></i> Matriz activa</span>
+          </div>
+          <div class="risk-matrix__plot" role="group" aria-label="Matriz conceptual de probabilidad e impacto">
+            <span class="risk-axis risk-axis--impact">Impacto</span>
+            <span class="risk-axis risk-axis--probability">Probabilidad</span>
+            <span class="risk-scale risk-scale--low">Bajo</span>
+            <span class="risk-scale risk-scale--high">Alto</span>
+            ${points}
+          </div>
+          <p class="experience-disclaimer">Posiciones y niveles relativos usados únicamente para explicar la metodología.</p>
+        </div>
+        <div class="risk-detail" aria-live="polite">
+          <div class="risk-detail__heading">
+            <span class="experience-kicker" data-risk-output="code">${first.code} · ${first.category}</span>
+            <h3 data-risk-output="title">${first.title}</h3>
+          </div>
+          <dl class="risk-meta">
+            <div><dt>Probabilidad</dt><dd data-risk-output="probability">${first.probability}</dd></div>
+            <div><dt>Impacto</dt><dd data-risk-output="impact">${first.impact}</dd></div>
+            <div><dt>Responsable</dt><dd data-risk-output="responsible">${first.responsible}</dd></div>
+          </dl>
+          <ol class="risk-trace">
+            <li class="is-active"><span>01 · Riesgo</span><strong data-risk-output="risk">${first.risk}</strong></li>
+            <li><span>02 · Control</span><strong data-risk-output="control">${first.control}</strong></li>
+            <li><span>03 · Evidencia</span><strong data-risk-output="evidence">${first.evidence}</strong></li>
+            <li><span>04 · Resultado esperado</span><strong data-risk-output="result">${first.result}</strong></li>
+          </ol>
+          <div class="risk-compare" aria-label="Comparación conceptual de riesgo inherente y residual">
+            <div><span>Riesgo inherente</span><i><b data-risk-bar="inherent" style="--chart-value:${first.inherent}"></b></i><small>Antes de controles</small></div>
+            <div><span>Riesgo residual</span><i><b data-risk-bar="residual" style="--chart-value:${first.residual}"></b></i><small>Después de controles</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function propertyEcosystemExperience() {
+  const layers = [
+    ['administracion', 'Administración', 'Compromisos y solicitudes dispersos.', 'Organizar responsables, estados y prioridades.', 'Continuidad y seguimiento visible.', 18, 16],
+    ['finanzas', 'Finanzas', 'Presupuesto y ejecución difíciles de leer.', 'Conectar movimientos, soportes y variaciones.', 'Información financiera más clara.', 50, 8],
+    ['cartera', 'Cartera', 'Obligaciones sin segmentación ni seguimiento.', 'Clasificar saldos y definir rutas de gestión.', 'Acciones oportunas y trazables.', 82, 16],
+    ['contabilidad', 'Contabilidad', 'Registros tardíos o sin conciliación.', 'Definir cierres, conciliaciones y soportes.', 'Reportes consistentes para decidir.', 91, 50],
+    ['documentos', 'Documentos', 'Actas, contratos y soportes fragmentados.', 'Estructurar archivo, acceso y conservación.', 'Memoria documental disponible.', 82, 84],
+    ['operacion', 'Operación', 'Mantenimientos y proveedores sin una vista común.', 'Coordinar tareas, evidencias y alertas.', 'Ejecución más ordenada.', 50, 92],
+    ['consejo', 'Consejo', 'Información técnica difícil de priorizar.', 'Traducir datos en asuntos y decisiones.', 'Mejor gobierno y supervisión.', 18, 84],
+    ['control', 'Control', 'Brechas detectadas cuando ya generan impacto.', 'Revisar riesgos, controles y compromisos.', 'Gestión más preventiva.', 9, 50],
+  ];
+  const first = layers[0];
+  const pathCoordinates = {
+    administracion: [122, 82],
+    finanzas: [340, 42],
+    cartera: [558, 82],
+    contabilidad: [620, 260],
+    documentos: [558, 438],
+    operacion: [340, 478],
+    consejo: [122, 438],
+    control: [60, 260],
+  };
+  const paths = layers.map(([slug]) => {
+    const [x, y] = pathCoordinates[slug];
+    return `<path class="ecosystem-path" data-ecosystem-path="${slug}" d="M ${x} ${y} L 340 260" pathLength="1"/>`;
+  }).join('');
+  const buttons = layers.map(([slug, label, problem, intervention, result, x, y], index) => `
+    <button class="ecosystem-node${index === 0 ? ' is-active' : ''}" type="button"
+      style="--node-x:${x}%;--node-y:${y}%"
+      data-ecosystem-node="${slug}"
+      data-ecosystem-label="${label}"
+      data-ecosystem-problem="${problem}"
+      data-ecosystem-intervention="${intervention}"
+      data-ecosystem-result="${result}"
+      aria-pressed="${index === 0 ? 'true' : 'false'}"><i aria-hidden="true"></i>${label}</button>`).join('');
+
+  return `
+  <section class="section section--motion motion-experience motion-experience--ph" id="ecosistema-copropiedad">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">Ecosistema de gestión</span><h2>Una copropiedad funciona mejor cuando sus capas conversan.</h2></div>
+        <p>Active cada frente para ver el problema típico, la intervención y el resultado esperado dentro de un mismo sistema de gestión.</p>
+      </div>
+      <div class="experience-shell ecosystem-lab reveal" data-ph-ecosystem>
+        <div class="ecosystem-map" aria-label="Ecosistema conceptual de una copropiedad">
+          <svg class="ecosystem-blueprint" viewBox="0 0 680 520" role="img" aria-label="Conexiones entre las áreas de una copropiedad">
+            <g class="ecosystem-paths">${paths}</g>
+            <g class="ecosystem-building" aria-hidden="true">
+              <path d="M270 386V169l70-45 70 45v217Z"/>
+              <path d="M300 386V205h80v181M270 249h140M270 306h140"/>
+              <path d="M321 222h16v16h-16zM353 222h16v16h-16zM321 275h16v16h-16zM353 275h16v16h-16zM321 328h16v16h-16zM353 328h16v16h-16z"/>
+            </g>
+          </svg>
+          <div class="ecosystem-core" aria-hidden="true"><span>Copropiedad</span><small>Sistema conectado</small></div>
+          ${buttons}
+        </div>
+        <div class="ecosystem-panel" aria-live="polite">
+          <div class="experience-toolbar"><span class="concept-label">Modelo conceptual</span><span class="experience-status"><i aria-hidden="true"></i> Capa conectada</span></div>
+          <span class="experience-kicker">Frente seleccionado</span>
+          <h3 data-ecosystem-output="label">${first[1]}</h3>
+          <div class="ecosystem-response">
+            <article><span>Señal</span><p data-ecosystem-output="problem">${first[2]}</p></article>
+            <article><span>Intervención</span><p data-ecosystem-output="intervention">${first[3]}</p></article>
+            <article><span>Resultado esperado</span><p data-ecosystem-output="result">${first[4]}</p></article>
+          </div>
+          <div class="ecosystem-chain" aria-label="Ejemplo de flujo conectado">
+            ${['Cartera', 'Finanzas', 'Contabilidad', 'Reportes', 'Consejo'].map((label, index) => `<span data-chain-index="${index}">${label}</span>`).join('<i aria-hidden="true"></i>')}
+          </div>
+          <p class="experience-disclaimer">Ejemplo de conexión: Cartera → Finanzas → Contabilidad → Reportes → Consejo.</p>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function innovationComparatorExperience() {
+  const manual = [
+    ['file-spreadsheet', 'Excel'],
+    ['envelope-paper', 'Correo'],
+    ['person-workspace', 'Persona'],
+    ['files', 'Archivo'],
+    ['check2-square', 'Validación manual'],
+    ['file-earmark-text', 'Informe'],
+  ];
+  const automated = [
+    ['files', 'Fuente de datos'],
+    ['arrow-repeat', 'Automatización'],
+    ['check2-circle', 'Validación'],
+    ['stars', 'IA / Reglas'],
+    ['bar-chart-line', 'Analítica'],
+    ['speedometer2', 'Dashboard'],
+    ['signpost-split', 'Decisión'],
+  ];
+  const flow = (items, type) => `<div class="process-flow process-flow--${type}" data-process-flow="${type}">${items.map(([iconName, label], index) => `
+    <div class="process-node" style="--node-order:${index}">${icon(iconName)}<span>${label}</span></div>${index < items.length - 1 ? '<i class="process-connector" aria-hidden="true"><b></b></i>' : ''}`).join('')}</div>`;
+
+  return `
+  <section class="section section--motion motion-experience motion-experience--innovation" id="proceso-inteligente">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">Antes → después</span><h2>Vea cómo un proceso fragmentado puede convertirse en un flujo inteligente.</h2></div>
+        <p>Compare dos arquitecturas conceptuales. La solución real siempre depende de las reglas, excepciones, herramientas y controles de cada organización.</p>
+      </div>
+      <div class="process-comparator reveal" data-process-comparator data-process-mode="manual">
+        <div class="comparator-toolbar">
+          <div class="comparator-tablist" role="tablist" aria-label="Comparar tipos de proceso">
+            <button id="tab-manual" type="button" role="tab" aria-selected="true" aria-controls="panel-manual" data-process-tab="manual">Proceso manual</button>
+            <button id="tab-automated" type="button" role="tab" aria-selected="false" aria-controls="panel-automated" data-process-tab="automated" tabindex="-1">Proceso automatizado</button>
+          </div>
+          <span class="concept-label">Demostración conceptual</span>
+        </div>
+        <div class="comparator-stage">
+          <section class="process-panel" id="panel-manual" role="tabpanel" aria-labelledby="tab-manual" data-process-panel="manual">
+            <div class="process-panel__heading"><span class="experience-kicker">Estado inicial</span><h3>Información que avanza por esfuerzo manual.</h3><p>Versiones, esperas y validaciones dependen de múltiples traspasos.</p></div>
+            ${flow(manual, 'manual')}
+            <div class="process-signals" aria-label="Fricciones conceptuales"><span>Espera</span><span>Duplicidad</span><span>Dependencia manual</span></div>
+          </section>
+          <section class="process-panel" id="panel-automated" role="tabpanel" aria-labelledby="tab-automated" data-process-panel="automated" hidden>
+            <div class="process-panel__heading"><span class="experience-kicker">Estado conectado</span><h3>Datos que viajan con reglas, controles y trazabilidad.</h3><p>El equipo conserva supervisión mientras el flujo organiza tareas y evidencia.</p></div>
+            ${flow(automated, 'automated')}
+            <div class="concept-dashboard" data-chart>
+              <div class="concept-dashboard__top"><span>Lectura del proceso</span><strong><i aria-hidden="true"></i> Flujo trazable</strong></div>
+              <svg class="concept-line-chart" viewBox="0 0 320 82" role="img" aria-label="Tendencia conceptual sin valores corporativos"><path class="concept-chart-grid" d="M0 68H320M0 42H320M0 16H320"/><path class="concept-chart-line" pathLength="1" d="M4 65C34 61 42 69 70 54S118 55 145 41 184 45 211 29 259 34 316 11"/><circle cx="316" cy="11" r="4"/></svg>
+              <div class="concept-bars" aria-label="Indicadores conceptuales sin escala numérica"><i style="--chart-value:.42"></i><i style="--chart-value:.6"></i><i style="--chart-value:.53"></i><i style="--chart-value:.76"></i><i style="--chart-value:.9"></i></div>
+              <small>Visualización demostrativa, no corresponde a métricas de clientes.</small>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function serviceExperience(service) {
+  if (service.slug === 'auditoria') return auditRiskExperience();
+  if (service.slug === 'propiedad-horizontal') return propertyEcosystemExperience();
+  if (service.slug === 'innovacion') return innovationComparatorExperience();
+  return '';
+}
+
 function buildLanding(service) {
   const waMessage = `Hola, quiero solicitar una asesoría sobre ${service.navName}.`;
   const solutionCards = service.solutions.map(([title, text, includes], index) => `
@@ -577,7 +872,7 @@ function buildLanding(service) {
   <p>${text}</p>
   <ul>${includes.map((item) => `<li>${item}</li>`).join('')}</ul>
 </article>`).join('');
-  const method = service.method.map((step) => `<article class="method-card reveal"><h3>${step}</h3></article>`).join('');
+  const method = service.method.map((step, index) => `<article class="method-card reveal" data-method-card style="--method-order:${index}"><h3>${step}</h3></article>`).join('');
   const faq = service.faq.map(([question, answer], index) => `
 <details${index === 0 ? ' open' : ''}>
   <summary>${question}</summary>
@@ -601,6 +896,8 @@ ${head({
     description: service.description,
     canonical: `/${service.slug}/`,
     image: service.image,
+    motion: true,
+    preloadImage: service.image,
     schema: [organizationSchema, serviceSchema(service)],
   })}
 <body data-page="${service.slug}">
@@ -643,6 +940,8 @@ ${header(service.active)}
     </div>
   </section>
 
+  ${serviceExperience(service)}
+
   <section class="section section--light" id="soluciones">
     <div class="container">
       <div class="section-heading">
@@ -662,7 +961,7 @@ ${header(service.active)}
         <div><span class="eyebrow">Metodología</span><h2>Un proceso visible desde el entendimiento hasta el seguimiento.</h2></div>
         <p>Las fases se ajustan al alcance; la lógica se mantiene: comprender, priorizar, ejecutar con evidencia y cerrar con próximos pasos claros.</p>
       </div>
-      <div class="method-grid">${method}</div>
+      <div class="method-grid" data-method-sequence>${method}</div>
     </div>
   </section>
 
@@ -703,7 +1002,7 @@ ${header(service.active)}
 
   ${contactSection(service.slug, service.navName, service.formMessage, service.formMessage)}
 </main>
-${footer()}
+${footer(true)}
 ${dock(service.slug, waMessage)}
 </body>
 </html>`;
@@ -711,7 +1010,7 @@ ${dock(service.slug, waMessage)}
 
 function buildHome() {
   const serviceFeatures = services.map((service, index) => `
-<article class="service-feature service-feature--${service.slug}">
+<article class="service-feature service-feature--${service.slug}" id="recorrido-${service.slug}" data-story-step="${service.slug}">
   <div class="service-feature__copy reveal">
     <span class="service-feature__index">0${index + 1} · Línea prioritaria</span>
     <h3>${service.name}</h3>
@@ -721,9 +1020,14 @@ function buildHome() {
   </div>
   <a class="service-feature__visual reveal" href="/${service.slug}/" aria-label="Conocer ${service.navName}" data-tilt-surface>
     <img src="${service.image}"${responsiveCardImageAttributes(service.image, '(max-width: 900px) calc(100vw - 32px), 48vw')} width="1280" height="732" alt="" loading="lazy" decoding="async">
+    <span class="service-feature__flow" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     <span class="service-feature__tag">${icon(index === 0 ? 'shield-check' : index === 1 ? 'buildings' : 'cpu')} ${service.heroTag}</span>
   </a>
 </article>`).join('');
+  const storyControls = services.map((service, index) => `
+    <a href="#recorrido-${service.slug}" data-story-control="${service.slug}"${index === 0 ? ' class="is-active" aria-current="location"' : ''}>
+      <span>0${index + 1}</span><strong>${service.name}</strong><small>${index === 0 ? 'Riesgo → evidencia' : index === 1 ? 'Gestión → control' : 'Dato → decisión'}</small>
+    </a>`).join('');
 
   const blogCards = [
     ['Auditoría', '2026-01-22', '22 Ene 2026', '/assets/img/blog/blog-details-auditoria-4.webp', 'Auditoría interna continua: preparación y enfoque práctico', '/blog/blog-details-auditoria-4.html'],
@@ -747,6 +1051,7 @@ ${head({
     description: homeDescription,
     canonical: '/',
     image: '/assets/img/services/innovacion-hero.webp',
+    motion: true,
     schema: [organizationSchema],
   })}
 <body data-page="home">
@@ -770,16 +1075,22 @@ ${header('home')}
           <li>${icon('check2-circle')} Tecnología aplicada</li>
         </ul>
       </div>
-      <div class="decision-canvas reveal is-visible" role="img" aria-label="Representación conceptual del flujo de trabajo de Palacios" data-tilt-surface>
-        <div class="decision-canvas__top"><span>Palacios Intelligence System</span><span class="status-dot">Sistema activo</span></div>
-        <div class="decision-flow">
-          <div class="flow-node" data-signal="risk"><span class="flow-node__icon">${icon('radar')}</span><span><strong>Riesgo visible</strong><small>Diagnóstico y priorización</small></span><span class="flow-node__state">Evaluar</span></div>
-          <div class="flow-node" data-signal="control"><span class="flow-node__icon">${icon('shield-check')}</span><span><strong>Control trazable</strong><small>Evidencia y responsables</small></span><span class="flow-node__state">Proteger</span></div>
-          <div class="flow-node" data-signal="process"><span class="flow-node__icon">${icon('diagram-3')}</span><span><strong>Proceso conectado</strong><small>Gestión y automatización</small></span><span class="flow-node__state">Optimizar</span></div>
-          <div class="flow-node" data-signal="decision"><span class="flow-node__icon">${icon('bar-chart-line')}</span><span><strong>Decisión informada</strong><small>Datos e indicadores útiles</small></span><span class="flow-node__state">Decidir</span></div>
+      <div class="decision-canvas reveal is-visible" role="group" aria-label="Demostración conceptual del flujo de trabajo de Palacios" data-tilt-surface data-system-demo data-system-stage="decision">
+        <div class="decision-canvas__top">
+          <div><span>Palacios Intelligence System</span><small>Demostración conceptual</small></div>
+          <div class="decision-canvas__controls"><span class="status-dot" data-system-status>Sistema conectado</span><button class="system-playback" type="button" data-system-playback aria-label="Pausar secuencia"><i class="bi bi-pause-fill" aria-hidden="true"></i><span>Pausar</span></button></div>
         </div>
-        <div class="decision-canvas__telemetry" aria-hidden="true"><span><i></i>Diagnóstico</span><span><i></i>Evidencia</span><span><i></i>Acción</span><b><i></i><i></i><i></i><i></i><i></i><i></i><i></i></b></div>
+        <div class="decision-flow">
+          <span class="decision-flow__progress" aria-hidden="true"><i></i></span>
+          <span class="decision-flow__pulse" aria-hidden="true"></span>
+          <button class="flow-node" type="button" data-system-step="risk" data-system-index="0" aria-pressed="false"><span class="flow-node__icon">${icon('radar')}</span><span><strong>Riesgo visible</strong><small>Diagnóstico y priorización</small></span><span class="flow-node__state">Evaluar</span></button>
+          <button class="flow-node" type="button" data-system-step="control" data-system-index="1" aria-pressed="false"><span class="flow-node__icon">${icon('shield-check')}</span><span><strong>Control trazable</strong><small>Evidencia y responsables</small></span><span class="flow-node__state">Proteger</span></button>
+          <button class="flow-node" type="button" data-system-step="process" data-system-index="2" aria-pressed="false"><span class="flow-node__icon">${icon('diagram-3')}</span><span><strong>Proceso conectado</strong><small>Gestión y automatización</small></span><span class="flow-node__state">Optimizar</span></button>
+          <button class="flow-node" type="button" data-system-step="decision" data-system-index="3" aria-pressed="true"><span class="flow-node__icon">${icon('bar-chart-line')}</span><span><strong>Decisión informada</strong><small>Datos e indicadores útiles</small></span><span class="flow-node__state">Decidir</span></button>
+        </div>
+        <div class="decision-canvas__telemetry" aria-hidden="true"><span data-system-stage-label><i></i>Decisión informada</span><b><i></i><i></i><i></i><i></i><i></i><i></i><i></i></b></div>
         <div class="canvas-note">${icon('info-circle')} Un sistema de trabajo que conecta criterio profesional, gestión y tecnología.</div>
+        <span class="sr-only" data-system-announcement aria-live="polite"></span>
       </div>
     </div>
   </section>
@@ -823,7 +1134,14 @@ ${header('home')}
         <div><span class="eyebrow">Líneas prioritarias</span><h2>Tres recorridos comerciales. Una misma promesa de claridad.</h2></div>
         <p>No todos los servicios tienen el mismo peso. Estas tres líneas concentran los retos donde la firma integra mejor conocimiento, gestión y tecnología.</p>
       </div>
-      ${serviceFeatures}
+      <div class="service-story" data-service-story>
+        <aside class="service-story__rail" aria-label="Recorridos comerciales">
+          <span class="service-story__eyebrow">Un sistema, tres aplicaciones</span>
+          <nav>${storyControls}</nav>
+          <div class="service-story__system" aria-hidden="true"><span data-story-from>Señal</span><i><b></b></i><span data-story-to>Evidencia</span></div>
+        </aside>
+        <div class="service-story__chapters">${serviceFeatures}</div>
+      </div>
     </div>
   </section>
 
@@ -854,7 +1172,8 @@ ${header('home')}
         <div><span class="eyebrow">Cómo trabajamos</span><h2>Del contexto a una solución que puede ejecutarse y medirse.</h2></div>
         <p>El proceso se adapta al servicio, manteniendo conversaciones claras, responsables visibles y entregables definidos.</p>
       </div>
-      <div class="process-line">
+      <div class="process-line" data-process-line role="group" aria-label="Etapas de la metodología Palacios">
+        <span class="process-line__progress" aria-hidden="true"><i></i></span>
         ${[
           ['Escuchamos', 'Entendemos el reto y a quién afecta.'],
           ['Diagnosticamos', 'Revisamos información, riesgos y restricciones.'],
@@ -862,7 +1181,7 @@ ${header('home')}
           ['Implementamos', 'Ejecutamos con evidencia y coordinación.'],
           ['Acompañamos', 'Aclaramos, transferimos y hacemos seguimiento.'],
           ['Medimos', 'Revisamos avances y oportunidades de mejora.'],
-        ].map(([title, text]) => `<article class="process-step reveal"><h3>${title}</h3><p>${text}</p></article>`).join('')}
+        ].map(([title, text], index) => `<article class="process-step reveal" data-process-step="${index}"><h3><button type="button" data-process-control="${index}" aria-pressed="${index === 0 ? 'true' : 'false'}">${title}</button></h3><p>${text}</p></article>`).join('')}
       </div>
     </div>
   </section>
@@ -949,7 +1268,7 @@ ${header('home')}
 
   ${contactSection('home', 'Asesoría general', 'Conversemos sobre los retos de su organización.', 'Quiero contarles el reto de mi organización y explorar una posible solución.')}
 </main>
-${footer()}
+${footer(true)}
 ${dock('home', 'Hola, quiero solicitar una asesoría con Palacios Asesores & Revisores.')}
 </body>
 </html>`;

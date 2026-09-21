@@ -59,8 +59,8 @@ for (const filePath of htmlFiles) {
   if (!redirect) {
     if (!/<main\b/i.test(html)) errors.push(`${relative}: falta landmark main.`);
     if (!/class=["'][^"']*skip-link/i.test(html)) errors.push(`${relative}: falta enlace para saltar al contenido.`);
-    if (!/palacios-2026(?:\.min)?\.css/i.test(html)) errors.push(`${relative}: no utiliza el sistema visual compartido.`);
-    if (!/palacios-2026(?:\.min)?\.js/i.test(html)) errors.push(`${relative}: no utiliza las interacciones compartidas.`);
+    if (!/palacios-(?:2026|experience)(?:\.min)?\.css/i.test(html)) errors.push(`${relative}: no utiliza el sistema visual compartido.`);
+    if (!/palacios-(?:2026|experience)(?:\.min)?\.js/i.test(html)) errors.push(`${relative}: no utiliza las interacciones compartidas.`);
     if (isDomo && !/domo\.min\.css/i.test(html)) errors.push(`${relative}: faltan los componentes visuales específicos de DOMO.`);
     if (isDomo && !/domo\.min\.js/i.test(html)) errors.push(`${relative}: faltan las interacciones específicas de DOMO.`);
     if (/bootstrap(?:-icons)?(?:\.min)?\.css|main\.css|aos\.css|font-awesome/i.test(html)) {

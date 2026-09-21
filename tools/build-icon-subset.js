@@ -20,6 +20,7 @@ function walkHtml(directory) {
 const scanFiles = [
   ...walkHtml(root),
   path.join(root, 'assets', 'js', 'palacios-2026.js'),
+  path.join(root, 'assets', 'js', 'palacios-motion.js'),
   path.join(root, 'tools', 'build-redesign.js'),
   path.join(root, 'tools', 'generate-premium-landings.js'),
 ];

@@ -86,6 +86,12 @@
   --duration-fast: 180ms;
   --duration-base: 240ms;
   --duration-slow: 620ms;
+  --motion-fast: 180ms;
+  --motion-normal: 440ms;
+  --motion-slow: 780ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
   --focus-ring: 0 0 0 4px rgba(48, 66, 116, 0.12);
 }
 
@@ -3517,4 +3523,3 @@ body::-webkit-scrollbar-thumb {
     transform: none !important;
   }
 }
-

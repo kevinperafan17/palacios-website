@@ -24,8 +24,9 @@
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link rel="preload" href="../assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/dm-serif-display-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="../assets/img/services/innovacion-hero.webp" imagesrcset="/assets/img/services/innovacion-hero-card-640.webp 640w, /assets/img/services/innovacion-hero-card-1024.webp 1024w" imagesizes="(max-width: 900px) calc(100vw - 32px), 46vw" type="image/webp" fetchpriority="high">
   <link href="../assets/css/palacios-icons.css" rel="stylesheet">
-  <link href="../assets/css/palacios-2026.min.css" rel="stylesheet">
+  <link href="../assets/css/palacios-experience.min.css" rel="stylesheet">
 
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -133,6 +134,55 @@
     </div>
   </section>
 
+
+  <section class="section section--motion motion-experience motion-experience--innovation" id="proceso-inteligente">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">Antes → después</span><h2>Vea cómo un proceso fragmentado puede convertirse en un flujo inteligente.</h2></div>
+        <p>Compare dos arquitecturas conceptuales. La solución real siempre depende de las reglas, excepciones, herramientas y controles de cada organización.</p>
+      </div>
+      <div class="process-comparator reveal" data-process-comparator data-process-mode="manual">
+        <div class="comparator-toolbar">
+          <div class="comparator-tablist" role="tablist" aria-label="Comparar tipos de proceso">
+            <button id="tab-manual" type="button" role="tab" aria-selected="true" aria-controls="panel-manual" data-process-tab="manual">Proceso manual</button>
+            <button id="tab-automated" type="button" role="tab" aria-selected="false" aria-controls="panel-automated" data-process-tab="automated" tabindex="-1">Proceso automatizado</button>
+          </div>
+          <span class="concept-label">Demostración conceptual</span>
+        </div>
+        <div class="comparator-stage">
+          <section class="process-panel" id="panel-manual" role="tabpanel" aria-labelledby="tab-manual" data-process-panel="manual">
+            <div class="process-panel__heading"><span class="experience-kicker">Estado inicial</span><h3>Información que avanza por esfuerzo manual.</h3><p>Versiones, esperas y validaciones dependen de múltiples traspasos.</p></div>
+            <div class="process-flow process-flow--manual" data-process-flow="manual">
+    <div class="process-node" style="--node-order:0"><i class="bi bi-file-spreadsheet" aria-hidden="true"></i><span>Excel</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:1"><i class="bi bi-envelope-paper" aria-hidden="true"></i><span>Correo</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:2"><i class="bi bi-person-workspace" aria-hidden="true"></i><span>Persona</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:3"><i class="bi bi-files" aria-hidden="true"></i><span>Archivo</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:4"><i class="bi bi-check2-square" aria-hidden="true"></i><span>Validación manual</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:5"><i class="bi bi-file-earmark-text" aria-hidden="true"></i><span>Informe</span></div></div>
+            <div class="process-signals" aria-label="Fricciones conceptuales"><span>Espera</span><span>Duplicidad</span><span>Dependencia manual</span></div>
+          </section>
+          <section class="process-panel" id="panel-automated" role="tabpanel" aria-labelledby="tab-automated" data-process-panel="automated" hidden>
+            <div class="process-panel__heading"><span class="experience-kicker">Estado conectado</span><h3>Datos que viajan con reglas, controles y trazabilidad.</h3><p>El equipo conserva supervisión mientras el flujo organiza tareas y evidencia.</p></div>
+            <div class="process-flow process-flow--automated" data-process-flow="automated">
+    <div class="process-node" style="--node-order:0"><i class="bi bi-files" aria-hidden="true"></i><span>Fuente de datos</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:1"><i class="bi bi-arrow-repeat" aria-hidden="true"></i><span>Automatización</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:2"><i class="bi bi-check2-circle" aria-hidden="true"></i><span>Validación</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:3"><i class="bi bi-stars" aria-hidden="true"></i><span>IA / Reglas</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:4"><i class="bi bi-bar-chart-line" aria-hidden="true"></i><span>Analítica</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:5"><i class="bi bi-speedometer2" aria-hidden="true"></i><span>Dashboard</span></div><i class="process-connector" aria-hidden="true"><b></b></i>
+    <div class="process-node" style="--node-order:6"><i class="bi bi-signpost-split" aria-hidden="true"></i><span>Decisión</span></div></div>
+            <div class="concept-dashboard" data-chart>
+              <div class="concept-dashboard__top"><span>Lectura del proceso</span><strong><i aria-hidden="true"></i> Flujo trazable</strong></div>
+              <svg class="concept-line-chart" viewBox="0 0 320 82" role="img" aria-label="Tendencia conceptual sin valores corporativos"><path class="concept-chart-grid" d="M0 68H320M0 42H320M0 16H320"/><path class="concept-chart-line" pathLength="1" d="M4 65C34 61 42 69 70 54S118 55 145 41 184 45 211 29 259 34 316 11"/><circle cx="316" cy="11" r="4"/></svg>
+              <div class="concept-bars" aria-label="Indicadores conceptuales sin escala numérica"><i style="--chart-value:.42"></i><i style="--chart-value:.6"></i><i style="--chart-value:.53"></i><i style="--chart-value:.76"></i><i style="--chart-value:.9"></i></div>
+              <small>Visualización demostrativa, no corresponde a métricas de clientes.</small>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--light" id="soluciones">
     <div class="container">
       <div class="section-heading">
@@ -188,7 +238,7 @@
         <div><span class="eyebrow">Metodología</span><h2>Un proceso visible desde el entendimiento hasta el seguimiento.</h2></div>
         <p>Las fases se ajustan al alcance; la lógica se mantiene: comprender, priorizar, ejecutar con evidencia y cerrar con próximos pasos claros.</p>
       </div>
-      <div class="method-grid"><article class="method-card reveal"><h3>Identificamos</h3></article><article class="method-card reveal"><h3>Analizamos</h3></article><article class="method-card reveal"><h3>Diseñamos</h3></article><article class="method-card reveal"><h3>Prototipamos</h3></article><article class="method-card reveal"><h3>Implementamos</h3></article><article class="method-card reveal"><h3>Medimos y mejoramos</h3></article></div>
+      <div class="method-grid" data-method-sequence><article class="method-card reveal" data-method-card style="--method-order:0"><h3>Identificamos</h3></article><article class="method-card reveal" data-method-card style="--method-order:1"><h3>Analizamos</h3></article><article class="method-card reveal" data-method-card style="--method-order:2"><h3>Diseñamos</h3></article><article class="method-card reveal" data-method-card style="--method-order:3"><h3>Prototipamos</h3></article><article class="method-card reveal" data-method-card style="--method-order:4"><h3>Implementamos</h3></article><article class="method-card reveal" data-method-card style="--method-order:5"><h3>Medimos y mejoramos</h3></article></div>
     </div>
   </section>
 
@@ -486,7 +536,7 @@
     function loadRuntime(){
       window.setTimeout(function(){
         var script = document.createElement('script');
-        script.src = '/assets/js/palacios-2026.min.js';
+        script.src = '/assets/js/palacios-experience.min.js';
         document.body.appendChild(script);
       }, 30);
     }

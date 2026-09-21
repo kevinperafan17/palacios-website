@@ -24,8 +24,9 @@
   <link rel="apple-touch-icon" href="../assets/img/apple-touch-icon.png">
   <link rel="preload" href="../assets/fonts/sora-latin-variable.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/dm-serif-display-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" as="image" href="../assets/img/services/auditoria-hero.webp" imagesrcset="/assets/img/services/auditoria-hero-card-640.webp 640w, /assets/img/services/auditoria-hero-card-1024.webp 1024w" imagesizes="(max-width: 900px) calc(100vw - 32px), 46vw" type="image/webp" fetchpriority="high">
   <link href="../assets/css/palacios-icons.css" rel="stylesheet">
-  <link href="../assets/css/palacios-2026.min.css" rel="stylesheet">
+  <link href="../assets/css/palacios-experience.min.css" rel="stylesheet">
 
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -133,6 +134,133 @@
     </div>
   </section>
 
+
+  <section class="section section--motion motion-experience motion-experience--audit" id="matriz-riesgos">
+    <div class="container">
+      <div class="section-heading">
+        <div><span class="eyebrow">Riesgo → control → evidencia</span><h2>Explore cómo un riesgo se convierte en una acción trazable.</h2></div>
+        <p>Seleccione un punto de la matriz para recorrer una demostración conceptual. No representa información, resultados ni métricas de un cliente.</p>
+      </div>
+      <div class="experience-shell risk-lab reveal" data-risk-lab data-chart>
+        <div class="risk-matrix">
+          <div class="experience-toolbar">
+            <span class="concept-label">Demostración conceptual</span>
+            <span class="experience-status"><i aria-hidden="true"></i> Matriz activa</span>
+          </div>
+          <div class="risk-matrix__plot" role="group" aria-label="Matriz conceptual de probabilidad e impacto">
+            <span class="risk-axis risk-axis--impact">Impacto</span>
+            <span class="risk-axis risk-axis--probability">Probabilidad</span>
+            <span class="risk-scale risk-scale--low">Bajo</span>
+            <span class="risk-scale risk-scale--high">Alto</span>
+
+    <button class="risk-point is-active" type="button"
+      style="--risk-x:74%;--risk-y:80%"
+      data-risk-code="R1"
+      data-risk-category="Financiero"
+      data-risk-title="Información financiera inconsistente"
+      data-risk-probability="Media"
+      data-risk-impact="Alto"
+      data-risk-risk="Cifras sin conciliación o soporte suficiente."
+      data-risk-control="Conciliaciones, revisión y responsables definidos."
+      data-risk-evidence="Soportes, trazas de revisión y cierre de diferencias."
+      data-risk-result="Mayor confiabilidad para informar y decidir."
+      data-risk-responsible="Finanzas + control"
+      data-risk-inherent="0.86"
+      data-risk-residual="0.36"
+      aria-label="Explorar R1: Financiero"
+      aria-pressed="true"><span>R1</span><small>Financiero</small></button>
+    <button class="risk-point" type="button"
+      style="--risk-x:61%;--risk-y:58%"
+      data-risk-code="R2"
+      data-risk-category="Operativo"
+      data-risk-title="Operación sin trazabilidad"
+      data-risk-probability="Alta"
+      data-risk-impact="Medio"
+      data-risk-risk="Cambios y aprobaciones sin un rastro verificable."
+      data-risk-control="Flujo definido con responsables y puntos de validación."
+      data-risk-evidence="Registro de estados, aprobaciones y excepciones."
+      data-risk-result="Procesos explicables y asuntos pendientes visibles."
+      data-risk-responsible="Operaciones"
+      data-risk-inherent="0.74"
+      data-risk-residual="0.29"
+      aria-label="Explorar R2: Operativo"
+      aria-pressed="false"><span>R2</span><small>Operativo</small></button>
+    <button class="risk-point" type="button"
+      style="--risk-x:47%;--risk-y:72%"
+      data-risk-code="R3"
+      data-risk-category="Cumplimiento"
+      data-risk-title="Cumplimiento reactivo"
+      data-risk-probability="Media"
+      data-risk-impact="Alto"
+      data-risk-risk="Obligaciones atendidas solo cuando aparece una urgencia."
+      data-risk-control="Calendario, criterios de revisión y alertas preventivas."
+      data-risk-evidence="Lista de verificación, soportes y seguimiento documentado."
+      data-risk-result="Menor exposición a omisiones y reprocesos."
+      data-risk-responsible="Cumplimiento + dirección"
+      data-risk-inherent="0.82"
+      data-risk-residual="0.31"
+      aria-label="Explorar R3: Cumplimiento"
+      aria-pressed="false"><span>R3</span><small>Cumplimiento</small></button>
+    <button class="risk-point" type="button"
+      style="--risk-x:34%;--risk-y:43%"
+      data-risk-code="R4"
+      data-risk-category="Tecnología"
+      data-risk-title="Accesos tecnológicos débiles"
+      data-risk-probability="Media"
+      data-risk-impact="Medio"
+      data-risk-risk="Permisos o cambios sin revisión suficiente."
+      data-risk-control="Perfiles, autorizaciones y revisión periódica de accesos."
+      data-risk-evidence="Matriz de acceso, aprobaciones y bitácoras disponibles."
+      data-risk-result="Mayor control sobre información y cambios críticos."
+      data-risk-responsible="Tecnología + líderes de proceso"
+      data-risk-inherent="0.62"
+      data-risk-residual="0.24"
+      aria-label="Explorar R4: Tecnología"
+      aria-pressed="false"><span>R4</span><small>Tecnología</small></button>
+    <button class="risk-point" type="button"
+      style="--risk-x:69%;--risk-y:31%"
+      data-risk-code="R5"
+      data-risk-category="Seguimiento"
+      data-risk-title="Hallazgos sin cierre"
+      data-risk-probability="Alta"
+      data-risk-impact="Medio"
+      data-risk-risk="Acciones de mejora sin fecha, evidencia o responsable visible."
+      data-risk-control="Plan priorizado con compromisos y revisión periódica."
+      data-risk-evidence="Soportes de avance, validación y cierre del hallazgo."
+      data-risk-result="Mejor continuidad sobre las acciones acordadas."
+      data-risk-responsible="Dueños de proceso"
+      data-risk-inherent="0.67"
+      data-risk-residual="0.27"
+      aria-label="Explorar R5: Seguimiento"
+      aria-pressed="false"><span>R5</span><small>Seguimiento</small></button>
+          </div>
+          <p class="experience-disclaimer">Posiciones y niveles relativos usados únicamente para explicar la metodología.</p>
+        </div>
+        <div class="risk-detail" aria-live="polite">
+          <div class="risk-detail__heading">
+            <span class="experience-kicker" data-risk-output="code">R1 · Financiero</span>
+            <h3 data-risk-output="title">Información financiera inconsistente</h3>
+          </div>
+          <dl class="risk-meta">
+            <div><dt>Probabilidad</dt><dd data-risk-output="probability">Media</dd></div>
+            <div><dt>Impacto</dt><dd data-risk-output="impact">Alto</dd></div>
+            <div><dt>Responsable</dt><dd data-risk-output="responsible">Finanzas + control</dd></div>
+          </dl>
+          <ol class="risk-trace">
+            <li class="is-active"><span>01 · Riesgo</span><strong data-risk-output="risk">Cifras sin conciliación o soporte suficiente.</strong></li>
+            <li><span>02 · Control</span><strong data-risk-output="control">Conciliaciones, revisión y responsables definidos.</strong></li>
+            <li><span>03 · Evidencia</span><strong data-risk-output="evidence">Soportes, trazas de revisión y cierre de diferencias.</strong></li>
+            <li><span>04 · Resultado esperado</span><strong data-risk-output="result">Mayor confiabilidad para informar y decidir.</strong></li>
+          </ol>
+          <div class="risk-compare" aria-label="Comparación conceptual de riesgo inherente y residual">
+            <div><span>Riesgo inherente</span><i><b data-risk-bar="inherent" style="--chart-value:0.86"></b></i><small>Antes de controles</small></div>
+            <div><span>Riesgo residual</span><i><b data-risk-bar="residual" style="--chart-value:0.36"></b></i><small>Después de controles</small></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section section--light" id="soluciones">
     <div class="container">
       <div class="section-heading">
@@ -188,7 +316,7 @@
         <div><span class="eyebrow">Metodología</span><h2>Un proceso visible desde el entendimiento hasta el seguimiento.</h2></div>
         <p>Las fases se ajustan al alcance; la lógica se mantiene: comprender, priorizar, ejecutar con evidencia y cerrar con próximos pasos claros.</p>
       </div>
-      <div class="method-grid"><article class="method-card reveal"><h3>Entendimiento</h3></article><article class="method-card reveal"><h3>Evaluación de riesgos</h3></article><article class="method-card reveal"><h3>Planeación</h3></article><article class="method-card reveal"><h3>Ejecución</h3></article><article class="method-card reveal"><h3>Análisis</h3></article><article class="method-card reveal"><h3>Informe</h3></article><article class="method-card reveal"><h3>Seguimiento</h3></article></div>
+      <div class="method-grid" data-method-sequence><article class="method-card reveal" data-method-card style="--method-order:0"><h3>Entendimiento</h3></article><article class="method-card reveal" data-method-card style="--method-order:1"><h3>Evaluación de riesgos</h3></article><article class="method-card reveal" data-method-card style="--method-order:2"><h3>Planeación</h3></article><article class="method-card reveal" data-method-card style="--method-order:3"><h3>Ejecución</h3></article><article class="method-card reveal" data-method-card style="--method-order:4"><h3>Análisis</h3></article><article class="method-card reveal" data-method-card style="--method-order:5"><h3>Informe</h3></article><article class="method-card reveal" data-method-card style="--method-order:6"><h3>Seguimiento</h3></article></div>
     </div>
   </section>
 
@@ -438,7 +566,7 @@
     function loadRuntime(){
       window.setTimeout(function(){
         var script = document.createElement('script');
-        script.src = '/assets/js/palacios-2026.min.js';
+        script.src = '/assets/js/palacios-experience.min.js';
         document.body.appendChild(script);
       }, 30);
     }

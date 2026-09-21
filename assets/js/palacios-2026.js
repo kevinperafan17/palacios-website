@@ -106,13 +106,12 @@
   updateConversionDock();
   updatePageProgress();
   document.addEventListener("scroll", scheduleHeaderUpdate, { passive: true });
-  window.addEventListener("resize", updateConversionDock, { passive: true });
+  window.addEventListener("resize", scheduleHeaderUpdate, { passive: true });
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const lowEndDevice =
     (navigator.deviceMemory !== undefined && navigator.deviceMemory <= 2) ||
     (navigator.deviceMemory === undefined && navigator.hardwareConcurrency <= 4);
-
   document.querySelectorAll("[data-spotlight]").forEach(function (surface) {
     if (reduceMotion || lowEndDevice) return;
     let pointerFrame = null;
@@ -312,5 +311,6 @@
     window.addEventListener(eventName, initializeOnIntent, { once: true, passive: true });
   });
   window.addEventListener("click", initializeOnIntent, { once: true, capture: true, passive: true });
-  window.setTimeout(initializeOnIntent, 12000);
+  if ("requestIdleCallback" in window) window.requestIdleCallback(initializeOnIntent, { timeout: 900 });
+  else window.setTimeout(initializeOnIntent, 180);
 })();
